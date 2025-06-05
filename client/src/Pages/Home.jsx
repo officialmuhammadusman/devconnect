@@ -37,7 +37,7 @@ const Home = () => {
       <CallToAction />
       <Testimonials />
       <FAQSSection /> 
-      <Footer />
+    
     </div>
   );
 };
