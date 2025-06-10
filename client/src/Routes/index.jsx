@@ -6,11 +6,22 @@ import Register from '../Pages/Register';
 import MyProfile from '../Pages/MyProfile';
 import EditProfile from '../Pages/EditProfile';
 import AllDevelopers from '../Pages/AllDevelopers';
-import Notifications from '../Pages/Notifications'; // ✅ Newly added
-import Chat from '../Pages/Chat'; // ✅ Newly added
-import About from '../Pages/Projects'; // ✅ Newly added
+import AllUsers from '../Pages/AllUsers'; // Ensure this import is correct
+import Notifications from '../Pages/Notifications';
+import Chat from '../Pages/Chat';
 import Projects from '../Pages/Projects';
 import Jobs from '../Pages/Jobs';
+import CreatePost from '../Pages/CreatePost';
+import Feed from '../Pages/Feed';
+import { useAuth } from '../context/AuthContext'; // For ProtectedRoute
+import { Navigate } from 'react-router-dom';
+
+// ProtectedRoute component to restrict access
+const ProtectedRoute = ({ children }) => {
+  const { token, loading } = useAuth();
+  if (!loading && !token) return <Navigate to="/login" replace />;
+  return children;
+};
 
 const router = createBrowserRouter([
   {
@@ -20,13 +31,16 @@ const router = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
-      { path: "/my-profile/:id", element:<MyProfile />},
-      { path: "/edit-profile", element: <EditProfile /> },
+      { path: "/my-profile/:id", element: <ProtectedRoute><MyProfile /></ProtectedRoute> },
+      { path: "/edit-profile", element: <ProtectedRoute><EditProfile /></ProtectedRoute> },
       { path: "/all-developers", element: <AllDevelopers /> },
-      { path: "/notifications", element: <Notifications /> }, // ✅
-      { path: "/chat", element: <Chat /> }, // ✅
-      { path: "/jobs", element: <Jobs/> }, // ✅
-      { path: "/projects", element: <Projects/> }, // ✅
+      { path: "/all-users", element: <ProtectedRoute><AllUsers /></ProtectedRoute> }, // Verify this matches the file structure
+      { path: "/notifications", element: <ProtectedRoute><Notifications /></ProtectedRoute> },
+      { path: "/chat", element: <ProtectedRoute><Chat /></ProtectedRoute> },
+      { path: "/jobs", element: <Jobs /> },
+      { path: "/projects", element: <Projects /> },
+      { path: "/create-post", element: <ProtectedRoute><CreatePost /></ProtectedRoute> },
+      { path: "/feed", element: <ProtectedRoute><Feed /></ProtectedRoute> },
     ],
   },
 ]);

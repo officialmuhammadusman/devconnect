@@ -4,7 +4,7 @@ import {
   FaHome, FaSearch, FaUser, FaUserPlus, FaChevronDown, FaChevronUp, 
   FaBell, FaEnvelope, FaCog, FaSignOutAlt, FaUserCircle, FaCode,
   FaThumbsUp, FaComment, FaUserFriends, FaRegCommentDots, FaLaptopCode,
-  FaServer, FaRobot, FaMobileAlt, FaBriefcase
+  FaServer, FaRobot, FaMobileAlt, FaBriefcase, FaRss
 } from 'react-icons/fa';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { BsFillChatDotsFill } from 'react-icons/bs';
@@ -27,7 +27,7 @@ const deepCosmosStyles = `
 `;
 
 const Navbar = () => {
-  const { user, logout } = useAuth(); // Use 'user' instead of 'currentUser'
+  const { user, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -124,6 +124,13 @@ const Navbar = () => {
                   <FaHome className="mr-2" />Home
                 </Link>
 
+                {/* Feed Link */}
+                {user && (
+                  <Link to="/feed" className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal transition-all px-3 py-2 rounded-md text-sm font-medium">
+                    <FaRss className="mr-2" />Feed
+                  </Link>
+                )}
+
                 {/* Developers Dropdown */}
                 <div className="relative" ref={dropdownRef}>
                   <button onClick={toggleDropdown} className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal transition-all px-3 py-2 rounded-md text-sm font-medium">
@@ -143,6 +150,13 @@ const Navbar = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Create Post Link */}
+                {user && (
+                  <Link to="/create-post" className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal transition-all px-3 py-2 rounded-md text-sm font-medium">
+                    <FaRegCommentDots className="mr-2" />Create Post
+                  </Link>
+                )}
 
                 {/* Projects/Showcase Link */}
                 <Link to="/projects" className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal transition-all px-3 py-2 rounded-md text-sm font-medium">
@@ -171,7 +185,7 @@ const Navbar = () => {
                       )}
                     </button>
                     {isNotificationDropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-80 bg-red-600 rounded-lg shadow-xl py-1 z-50 border border-deep-cosmos-grey">
+                      <div className="absolute right-0 mt-2 w-80 bg-deep-cosmos-secondary rounded-lg shadow-xl py-1 z-50 border border-deep-cosmos-grey">
                         <div className="px-4 py-3 border-b border-deep-cosmos-grey flex justify-between items-center bg-deep-cosmos-primary rounded-t-lg">
                           <h3 className="font-semibold text-deep-cosmos-white">Notifications</h3>
                           <Link to="/notifications" className="text-sm text-deep-cosmos-teal hover:text-deep-cosmos-teal transition-all" onClick={() => setIsNotificationDropdownOpen(false)}>View All</Link>
@@ -287,6 +301,13 @@ const Navbar = () => {
                 <FaHome className="mr-3 text-lg" />Home
               </Link>
 
+              {/* Feed Link */}
+              {user && (
+                <Link to="/feed" className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal transition-all px-3 py-3 rounded-md text-base font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+                  <FaRss className="mr-3 text-lg" />Feed
+                </Link>
+              )}
+
               {/* Developers Dropdown */}
               <div className="space-y-1">
                 <button onClick={toggleDropdown} className="flex items-center justify-between w-full text-deep-cosmos-white hover:text-deep-cosmos-teal transition-all px-3 py-3 rounded-md text-base font-medium">
@@ -304,6 +325,13 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
+
+              {/* Create Post Link */}
+              {user && (
+                <Link to="/create-post" className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal transition-all px-3 py-3 rounded-md text-base font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+                  <FaRegCommentDots className="mr-3 text-lg" />Create Post
+                </Link>
+              )}
 
               {/* Projects Link */}
               <Link to="/projects" className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal transition-all px-3 py-3 rounded-md text-base font-medium" onClick={() => setIsMobileMenuOpen(false)}>
@@ -344,9 +372,9 @@ const Navbar = () => {
                   </div>
                 </>
               ) : (
-                <div className="border-t border-deep-cosmos-grey pt-4 mt-4 space-y-3">
+                <div className="border-t border-deep-cosmos-grey pt-3 mt-4 space-y-3">
                   <div className="px-3 py-2 text-xs font-semibold text-deep-cosmos-light-grey uppercase tracking-wider">Get Started</div>
-                  <Link to="/login" className="flex items-center justify-center bg-deep-cosmos-primary text-deep-cosmos-teal px-4 py-3 rounded-lg text-base font-medium hover:text-deep-cosmos-teal transition-all mx-3" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Link to="/login" className="flex items-center justify-center bg-deep-cosmos-primary text-deep-cosmos-teal px-4 py-3 rounded-lg text-base font-medium hover:bg-deep-cosmos-teal transition-colors">
                     <FaUser className="mr-3" />Login
                   </Link>
                   <Link to="/register" className="flex items-center justify-center bg-white text-deep-cosmos-primary px-4 py-3 rounded-lg text-base font-medium hover:text-deep-cosmos-teal transition-all mx-3" onClick={() => setIsMobileMenuOpen(false)}>
