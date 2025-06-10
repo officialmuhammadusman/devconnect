@@ -1,38 +1,38 @@
-import React from 'react';
-import { FaStar } from 'react-icons/fa';
+import React from "react";
+import { FaStar } from "react-icons/fa";
 
 const testimonials = [
   {
-    name: 'Ali Raza',
-    role: 'Frontend Engineer',
-    quote:
-      'I connected with devs who helped me refactor my code and landed freelance gigs too. DevConnect is 🔥',
-    image: 'https://i.pravatar.cc/100?img=1',
+    name: "Ali Raza",
+    role: "Frontend Engineer",
+    quote: "I connected with devs who helped me refactor my code and landed freelance gigs too. DevConnect is 🔥",
+    image: "https://i.pravatar.cc/100?img=1",
   },
   {
-    name: 'Sofia Kim',
-    role: 'Full Stack Developer',
-    quote:
-      'Found a React mentor within 2 days. The networking and feedback loop are amazing!',
-    image: 'https://i.pravatar.cc/100?img=2',
+    name: "Sofia Kim",
+    role: "Full Stack Developer",
+    quote: "Found a React mentor within 2 days. The networking and feedback loop are amazing!",
+    image: "https://i.pravatar.cc/100?img=2",
   },
   {
-    name: 'Carlos Diaz',
-    role: 'Backend Developer',
-    quote:
-      'Collaborating on open-source projects through DevConnect boosted my GitHub visibility!',
-    image: 'https://i.pravatar.cc/100?img=3',
+    name: "Carlos Diaz",
+    role: "Backend Developer",
+    quote: "Collaborating on open-source projects through DevConnect boosted my GitHub visibility!",
+    image: "https://i.pravatar.cc/100?img=3",
   },
 ];
 
 const Testimonials = () => {
   return (
-    <section id='trusted' className="bg-[#0f172a] text-white py-24 px-6">
-      <div className="max-w-7xl mx-auto text-center">
-        <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-         Trusted by Developers Worldwide
+    <section id="trusted" className="relative bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+      {/* Glassmorphic Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/5 backdrop-blur-sm"></div>
+
+      <div className="max-w-7xl mx-auto text-center relative z-10">
+        <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold mb-6 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          Trusted by Developers Worldwide
         </h2>
-        <p className="text-gray-400 mb-16 text-lg">
+        <p className="text-slate-300 text-lg md:text-xl mb-12 max-w-3xl mx-auto leading-relaxed">
           Real stories from the DevConnect community.
         </p>
 
@@ -40,30 +40,23 @@ const Testimonials = () => {
           {testimonials.map((t, idx) => (
             <div
               key={idx}
-              className="bg-gradient-to-br from-white/5 to-white/10 border border-white/10 rounded-2xl p-8 text-left shadow-lg hover:shadow-xl transition-all duration-300 group"
+              className="group bg-slate-700/30 backdrop-blur-lg rounded-2xl p-6 border border-slate-600/30 hover:border-cyan-400/50 transition-all duration-300 hover:scale-105 shadow-lg"
             >
-              {/* Avatar */}
               <img
                 src={t.image}
                 alt={t.name}
-                className="w-16 h-16 rounded-full mb-4 border-2 border-purple-500 shadow-md"
+                className="w-16 h-16 rounded-full mb-4 border-2 border-cyan-400 shadow-md mx-auto"
               />
-
-              {/* Name & Role */}
-              <h3 className="text-white font-semibold text-lg">
+              <h3 className="text-white font-semibold text-lg mb-2 group-hover:text-cyan-400 transition-colors duration-300">
                 {t.name}
               </h3>
-              <p className="text-sm text-purple-300 mb-4">{t.role}</p>
-
-              {/* Testimonial */}
-              <p className="text-gray-300 italic leading-relaxed mb-4">
+              <p className="text-sm text-slate-300 mb-4">{t.role}</p>
+              <p className="text-slate-300 text-sm italic leading-relaxed mb-4">
                 “{t.quote}”
               </p>
-
-              {/* Optional Rating */}
-              <div className="flex space-x-1 text-yellow-400">
+              <div className="flex justify-center space-x-1 text-yellow-400">
                 {[...Array(5)].map((_, i) => (
-                  <FaStar key={i} className="text-sm" />
+                  <FaStar key={i} className="w-4 h-4" />
                 ))}
               </div>
             </div>
