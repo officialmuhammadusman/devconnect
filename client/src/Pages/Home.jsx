@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react'; // Import useEffect
 import { useLocation } from 'react-router-dom'; // Import useLocation
 
-import Navbar from '../Components/Navbar';
+
 import DevConnectHero from '../Components/DevConnectHero';
-import DeveloperCards from '../Components/DeveloperCard';
+
 import HowItWorks from '../Components/HowItWorks';
 import WhyChoose from '../Components/WhyChoose'; 
 import CallToAction from '../Components/CallToAction';
 import Testimonials from '../Components/Testimonials';
 import FAQSSection from '../Components/FAQSSection'; 
-import Footer from '../Components/Footer';
+
 
 const Home = () => {
   const location = useLocation(); 
@@ -31,7 +31,7 @@ const Home = () => {
     <div>
       
       <DevConnectHero />
-      <DeveloperCards />
+ 
       <HowItWorks />
       <WhyChoose /> 
       <CallToAction />
