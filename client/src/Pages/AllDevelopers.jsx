@@ -39,7 +39,7 @@ const AllDevelopers = () => {
       try {
         const result = await getAllDevelopers(selectedFilter);
         if (result.success) {
-          setUsers(result.developers);
+          setUsers(result.developers || []); // Ensure users is always an array
         } else {
           throw new Error(result.message);
         }
@@ -53,13 +53,7 @@ const AllDevelopers = () => {
     fetchUsers();
   }, [getAllDevelopers, selectedFilter]);
 
-  const normalizeLocation = (location) => {
-    if (!location) return "Unknown Location";
-    const parts = location.split(",").map((part) => part.trim());
-    const countries = ["Pakistan", "India", "USA", "Australia"];
-    return countries.includes(parts[0]) ? parts[0] : parts[0] || "Unknown Location";
-  };
-
+  // Compute formattedDevelopers only when users is available
   const formattedDevelopers = users.map((dev) => ({
     id: dev._id || dev.id,
     name: dev.fullName || "Anonymous",
@@ -72,6 +66,13 @@ const AllDevelopers = () => {
     createdAt: dev.createdAt,
     updatedAt: dev.updatedAt,
   }));
+
+  const normalizeLocation = (location) => {
+    if (!location) return "Unknown Location";
+    const parts = location.split(",").map((part) => part.trim());
+    const countries = ["Pakistan", "India", "USA", "Australia"];
+    return countries.includes(parts[0]) ? parts[0] : parts[0] || "Unknown Location";
+  };
 
   const uniqueLocations = [...new Set(formattedDevelopers.map((dev) => dev.location))]
     .filter((loc) => loc && loc !== "Unknown Location")

@@ -27,10 +27,15 @@ export const AuthProvider = ({ children }) => {
         if (res.data.success) {
           setUser(res.data.data);
         } else {
+          console.warn("Profile fetch failed:", res.data.message);
           logout();
         }
       } catch (error) {
-        console.error("Profile Fetch Error:", error);
+        console.error("Profile Fetch Error:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
         logout();
       }
 

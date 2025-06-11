@@ -17,8 +17,10 @@ const AllUsers = () => {
       setError("");
       try {
         const res = await getAllDevelopers("all");
-        if (!res.success) throw new Error(res.message);
-        setUsers(res.developers.map(user => ({
+        if (!res.success) throw new Error(res.message || "Failed to fetch users");
+        // Ensure res.developers is an array before mapping
+        const developers = Array.isArray(res.developers) ? res.developers : [];
+        setUsers(developers.map(user => ({
           ...user,
           followersCount: user.followers?.length || 0,
           followingCount: user.following?.length || 0
@@ -26,6 +28,7 @@ const AllUsers = () => {
       } catch (err) {
         setError(err.message || "Failed to fetch users");
         toast.error(err.message || "Failed to fetch users");
+        setUsers([]); // Set to empty array on error
       } finally {
         setLoading(false);
       }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +25,14 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user, loading } = useAuth();
+
+  // Redirect authenticated users to their profile
+  useEffect(() => {
+    if (!loading && user) {
+      navigate(`/my-profile/${user._id}`, { replace: true });
+    }
+  }, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -41,11 +48,16 @@ const Login = () => {
             Welcome Back!
           </h1>
           <p className="text-slate-300 text-lg mt-2">
-            Sign in to your developer account
+            Sign in to network with developers on DevConnect
           </p>
         </div>
 
-        <div className="bg-slate-700/30 backdrop-blur-lg rounded-2xl border border-slate-600/30 shadow-xl overflow-hidden">
+        <div className="bg-slate-700/30 backdrop-blur-lg rounded-2xl border border-slate-600/30 shadow-xl overflow-hidden relative">
+          {loading && (
+            <div className="absolute inset-0 bg-slate-800/50 flex items-center justify-center z-20">
+              <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
           <div className="p-6 sm:p-8">
             <Formik
               initialValues={{ email: "", password: "" }}
@@ -54,15 +66,15 @@ const Login = () => {
                 try {
                   const res = await login(values.email, values.password, rememberMe);
 
-                  if (res.success && res.data.user) {
+                  if (res.success && res.data?.user) {
                     toast.success("✅ Login successful!");
                     resetForm();
-                    navigate(`/my-profile/${res.data.user._id}`);
+                    navigate(`/my-profile/${res.data.user._id}`, { replace: true });
                   } else {
-                    toast.error(`❌ ${res.message || "Login failed!"}`);
+                    toast.error(`❌ ${res.message || "Invalid email or password"}`);
                   }
                 } catch (error) {
-                  toast.error("❌ Login failed. Please try again.");
+                  toast.error("❌ Invalid email or password. Please try again.");
                 } finally {
                   setSubmitting(false);
                 }
@@ -155,18 +167,21 @@ const Login = () => {
                     <button
                       type="button"
                       className="flex items-center justify-center px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
+                      title="Sign in with Google"
                     >
                       <FaGoogle className="text-red-500 text-lg" />
                     </button>
                     <button
                       type="button"
                       className="flex items-center justify-center px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
+                      title="Sign in with GitHub"
                     >
                       <FaGithub className="text-white text-lg" />
                     </button>
                     <button
                       type="button"
                       className="flex items-center justify-center px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
+                      title="Sign in with LinkedIn"
                     >
                       <FaLinkedin className="text-blue-500 text-lg" />
                     </button>
@@ -175,7 +190,7 @@ const Login = () => {
                   <div className="text-center pt-4">
                     <p className="text-sm text-slate-400">
                       Don’t have an account?{" "}
-                      <Link to="/register" className="text-cyan-400 hover:text-cyan-300 font-medium">
+                      <Link to="/register" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-300">
                         Create one
                       </Link>
                     </p>

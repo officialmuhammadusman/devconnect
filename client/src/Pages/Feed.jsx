@@ -31,10 +31,11 @@ const Feed = () => {
 
       setIsLoading(false);
 
-      if (result.success) {
+      if (result.success && Array.isArray(result.posts)) {
         setPosts(result.posts);
       } else {
-        setError(result.message);
+        setError(result.message || "Failed to load posts");
+        setPosts([]); // Ensure posts is an empty array on failure
       }
     };
 
