@@ -1,12 +1,9 @@
-// server/index.js
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
-import userroutes from './routes/userroutes.js';
-import router from './routes/userroutes.js';
-import userrouterrouter from './routes/userroutes.js';
 import userrouter from './routes/userroutes.js';
+import postRouter from './routes/postroutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -21,8 +18,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-app.use('/api/user',userrouter)
+// Mount routes
+app.use('/api/user', userrouter);
+app.use('/api/post', postRouter);
 
 // Test route
 app.get('/', (req, res) => {

@@ -10,7 +10,9 @@ const userSchema = new mongoose.Schema(
     skills: [{ type: String }],
     profileImage: { type: String, trim: true }, // stores Cloudinary URL or filename
     category: { type: String, enum: ['frontend', 'backend', 'fullstack', 'ai', 'mobile', 'other'], default: 'other' },
-    experience: { type: String, default: '0 years' } // Will be calculated based on registration time
+    experience: { type: String, default: '0 years' }, // Will be calculated based on registration time
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Users this user follows
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Users following this user
   },
   { timestamps: true }
 );

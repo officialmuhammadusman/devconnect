@@ -4,8 +4,11 @@ import {
   registerUser,
   loginUser,
   getUserProfile,
+  getUserProfileById,
   editUserProfile,
-  getAllDevelopers, // ✅ Import the new controller
+  getAllDevelopers,
+  followUser,
+  unfollowUser,
 } from '../controllers/authController.js';
 import verifyToken from '../middlewares/verifytoken.js';
 
@@ -13,10 +16,11 @@ const userrouter = express.Router();
 
 userrouter.post('/register', upload.single('profileImage'), registerUser);
 userrouter.post('/login', loginUser);
-userrouter.get("/profile", verifyToken, getUserProfile);
+userrouter.get('/profile', verifyToken, getUserProfile);
+userrouter.get('/profile/:id', verifyToken, getUserProfileById);
 userrouter.put('/profile', verifyToken, upload.single('profileImage'), editUserProfile);
-
-// ✅ Add this new route to fetch all developers
 userrouter.get('/developers', getAllDevelopers);
+userrouter.post('/follow/:id', verifyToken, followUser);
+userrouter.post('/unfollow/:id', verifyToken, unfollowUser);
 
 export default userrouter;

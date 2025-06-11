@@ -61,7 +61,7 @@ export const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       profileImage: profileImageUrl,
-      category: category || 'other', // Default to 'other' if not provided
+      category: category || 'other',
       experience
     });
 
@@ -85,7 +85,6 @@ export const registerUser = async (req, res) => {
         }
       }
     });
-
   } catch (error) {
     console.error('Register Error:', error.message);
     return res.status(500).json({
@@ -151,7 +150,6 @@ export const loginUser = async (req, res) => {
         }
       }
     });
-
   } catch (error) {
     console.error("Login Error:", error);
     return res.status(500).json({
@@ -176,9 +174,39 @@ export const getUserProfile = async (req, res) => {
       message: "User profile fetched successfully",
       data: user
     });
-
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error while fetching profile" });
+    res.status(500).json({ success: false, message: "Server error while fetching" });
+  }
+};
+
+// .....................get User Profile by ID..................
+export const getUserProfileById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).select("-password");
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Check if the authenticated user is following this user
+    const currentUserId = req.user.userId;
+    const isFollowing = await User.findById(currentUserId).select("following -_id");
+    const following = isFollowing ? isFollowing.following : [];
+    const followingCount = following.length;
+    const followersCount = user.followers ? user.followers.length : 0;
+
+    res.status(200).json({
+      success: true,
+      message: "User profile fetched successfully",
+      data: {
+        ...user.toObject(),
+        isFollowing: following.includes(id),
+        followersCount,
+        followingCount,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error while fetching" });
   }
 };
 
@@ -188,7 +216,6 @@ export const editUserProfile = async (req, res) => {
     const userId = req.user.userId;
     const { fullName, headline, skills, location, email, category, experience } = req.body;
 
-    // Validate input
     if (email && !validator.isEmail(email)) {
       return res.status(400).json({
         success: false,
@@ -196,7 +223,6 @@ export const editUserProfile = async (req, res) => {
       });
     }
 
-    // Check if new email is already in use by another user
     if (email) {
       const existingUser = await User.findOne({ email, _id: { $ne: userId } });
       if (existingUser) {
@@ -207,17 +233,29 @@ export const editUserProfile = async (req, res) => {
       }
     }
 
-    // Prepare update object
     const updateData = {};
-    if (fullName) updateData.fullName = fullName;
-    if (headline) updateData.headline = headline;
-    if (skills) updateData.skills = skills.split(',').map(s => s.trim());
-    if (location) updateData.location = location;
-    if (email) updateData.email = email;
-    if (category) updateData.category = category;
-    if (experience) updateData.experience = experience;
+    if (fullName) {
+      updateData.fullName = fullName;
+    }
+    if (headline) {
+      updateData.headline = headline;
+    }
+    if (skills) {
+      updateData.skills = skills.split(',').map(s => s.trim());
+    }
+    if (location) {
+      updateData.location = location;
+    }
+    if (email) {
+      updateData.email = email;
+    }
+    if (category) {
+      updateData.category = category;
+    }
+    if (experience) {
+      updateData.experience = experience;
+    }
 
-    // Handle profile image update
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: 'devconnect/profileImages',
@@ -225,11 +263,9 @@ export const editUserProfile = async (req, res) => {
       });
       updateData.profileImage = result.secure_url;
       
-      // Clean up uploaded file
       fs.unlinkSync(req.file.path);
     }
 
-    // Update user in database
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { $set: updateData },
@@ -258,7 +294,6 @@ export const editUserProfile = async (req, res) => {
         experience: updatedUser.experience
       }
     });
-
   } catch (error) {
     console.error("Edit Profile Error:", error);
     return res.status(500).json({
@@ -269,29 +304,164 @@ export const editUserProfile = async (req, res) => {
 };
 
 // .................. Get All Developers ..................
-// .................. Get All Developers ..................
 export const getAllDevelopers = async (req, res) => {
   try {
-    const { category } = req.query; // Get category from query parameters
+    const { category } = req.query;
     let query = {};
 
-    if (category && category !== 'all') {
-      query.category = category; // Filter by category if provided
+    if (category && category !== "all") {
+      query.category = category;
     }
 
-    const developers = await User.find(query)
-      .select('-password -__v'); // Don't send password or Mongo version field
+    const developers = await User.find(query).select("-password -__v");
+    const currentUserId = req.user?.userId; // Optional chaining in case no user is logged in
+
+    const usersWithFollowing = developers.map(user => {
+      const isFollowing = currentUserId ? user.followers.includes(currentUserId) : false;
+      return {
+        ...user.toObject(),
+        isFollowing,
+        followersCount: user.followers ? user.followers.length : 0,
+        followingCount: user.following ? user.following.length : 0,
+      };
+    });
 
     return res.status(200).json({
       success: true,
-      message: 'Developers fetched successfully',
-      data: developers
+      message: "Developers fetched successfully",
+      data: usersWithFollowing,
     });
   } catch (error) {
     console.error("Get Developers Error:", error.message);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error while fetching developers'
+      message: "Internal server error while fetching developers",
+    });
+  }
+};
+
+// .................. Follow User ..................
+export const followUser = async (req, res) => {
+  try {
+    const userId = req.user.userId; // Current user
+    const { id } = req.params; // Target user to follow
+
+    if (userId === id) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot follow yourself"
+      });
+    }
+
+    const targetUser = await User.findById(id);
+    if (!targetUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User to follow not found"
+      });
+    }
+
+    const currentUser = await User.findById(userId);
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Current user not found"
+      });
+    }
+
+    // Check if already following
+    if (currentUser.following.includes(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "You are already following this user"
+      });
+    }
+
+    // Update current user's following and target user's followers
+    await User.findByIdAndUpdate(
+      userId,
+      { $addToSet: { following: id } },
+      { new: true }
+    );
+
+    await User.findByIdAndUpdate(
+      id,
+      { $addToSet: { followers: userId } },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Successfully followed user"
+    });
+  } catch (error) {
+    console.error("Follow User Error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error. Please try again later."
+    });
+  }
+};
+
+// .................. Unfollow User ..................
+export const unfollowUser = async (req, res) => {
+  try {
+    const userId = req.user.userId; // Current user
+    const { id } = req.params; // Target user to unfollow
+
+    if (userId === id) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot unfollow yourself"
+      });
+    }
+
+    const targetUser = await User.findById(id);
+    if (!targetUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User to unfollow not found"
+      });
+    }
+
+    const currentUser = await User.findById(userId);
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Current user not found"
+      });
+    }
+
+    // Check if not following
+    if (!currentUser.following.includes(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "You are not following this user"
+      });
+    }
+
+    // Update current user's following and target user's followers
+    await User.findByIdAndUpdate(
+      userId,
+      { $pull: { following: id } },
+      { new: true }
+    );
+
+    await User.findByIdAndUpdate(
+      id,
+      { $pull: { followers: userId } },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Successfully unfollowed user"
+    });
+  } catch (error) {
+    console.error("Unfollow User Error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error. Please try again later."
     });
   }
 };
