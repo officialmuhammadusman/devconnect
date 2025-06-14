@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   FaEnvelope,
@@ -13,8 +13,8 @@ import {
   FaGithub,
   FaLinkedin,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Invalid email format").required("Email is required"),
@@ -27,16 +27,14 @@ const Login = () => {
   const navigate = useNavigate();
   const { login, user, loading } = useAuth();
 
-  // Redirect authenticated users to their profile
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user && user._id) {
       navigate(`/my-profile/${user._id}`, { replace: true });
     }
   }, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      {/* Glassmorphic Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/5 backdrop-blur-sm"></div>
 
       <div className="max-w-md w-full relative z-10">
@@ -59,142 +57,140 @@ const Login = () => {
             </div>
           )}
           <div className="p-6 sm:p-8">
-            <Formik
-              initialValues={{ email: "", password: "" }}
-              validationSchema={validationSchema}
-              onSubmit={async (values, { setSubmitting, resetForm }) => {
-                try {
-                  const res = await login(values.email, values.password, rememberMe);
+           <Formik
+  initialValues={{ email: "", password: "" }}
+  validationSchema={validationSchema}
+  onSubmit={async (values, { setSubmitting, resetForm }) => {
+    try {
+      console.log("🔐 Attempting login with:", values);
 
-                  if (res.success && res.data?.user) {
-                    toast.success("✅ Login successful!");
-                    resetForm();
-                    navigate(`/my-profile/${res.data.user._id}`, { replace: true });
-                  } else {
-                    toast.error(`❌ ${res.message || "Invalid email or password"}`);
-                  }
-                } catch (error) {
-                  toast.error("❌ Invalid email or password. Please try again.");
-                } finally {
-                  setSubmitting(false);
-                }
-              }}
-            >
+      const res = await login(values.email, values.password, rememberMe);
+
+      console.log("📦 Login response:", res);
+
+      if (res.success && res.user) {
+        const token = localStorage.getItem("token");
+        console.log("🪙 JWT token from storage:", token);
+
+        const decoded = jwtDecode(token);
+        console.log("📜 Decoded JWT:", decoded);
+
+        const userId = res.user._id || decoded?.userId;
+        console.log("👤 Resolved userId:", userId);
+
+        if (!userId) {
+          throw new Error("Unable to determine user ID from login response or token");
+        }
+
+        toast.success("✅ Login successful!");
+        resetForm();
+
+        // ✅ Try-catch safe navigation
+        setTimeout(() => navigate(`/my-profile/${userId}`, { replace: true }), 0);
+      } else {
+        toast.error(`❌ ${res.message || "Invalid email or password"}`);
+      }
+    } catch (error) {
+      toast.error("❌ Login failed. Check credentials or try again.");
+      console.error("🚨 Login error:", error);
+    } finally {
+      setSubmitting(false);
+    }
+  }}
+>
+
               {({ isSubmitting }) => (
                 <Form className="space-y-5">
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-                      Email Address
-                    </label>
-                    <div className="relative">
-                      <FaEnvelope className="absolute top-1/2 left-3 transform -translate-y-1/2 text-cyan-400 w-5 h-5" />
-                      <Field
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="Enter your email address"
-                        className="pl-10 w-full bg-slate-800/50 border border-slate-600/50 rounded-xl py-3 px-4 text-slate-300 placeholder-slate-500 outline-none focus:border-cyan-400 focus:bg-slate-800 transition-all duration-300"
-                      />
-                    </div>
-                    <ErrorMessage name="email" component="div" className="text-red-400 text-sm mt-1" />
+
+                  {/* Email */}
+                  <div className="relative">
+                    <Field
+                      type="email"
+                      name="email"
+                      placeholder="Email"
+                      className="w-full px-4 py-3 pl-10 rounded-lg bg-slate-800 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                    />
+                    <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cyan-400" />
+                    <ErrorMessage
+                      name="email"
+                      component="div"
+                      className="text-red-400 text-sm mt-1"
+                    />
                   </div>
 
-                  <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
-                      Password
-                    </label>
-                    <div className="relative">
-                      <FaLock className="absolute top-1/2 left-3 transform -translate-y-1/2 text-cyan-400 w-5 h-5" />
-                      <Field
-                        id="password"
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        className="pl-10 pr-10 w-full bg-slate-800/50 border border-slate-600/50 rounded-xl py-3 px-4 text-slate-300 placeholder-slate-500 outline-none focus:border-cyan-400 focus:bg-slate-800 transition-all duration-300"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute top-1/2 right-3 transform -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors duration-300"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                      >
-                        {showPassword ? <FaEyeSlash className="w-5 h-5" /> : <FaEye className="w-5 h-5" />}
-                      </button>
+                  {/* Password */}
+                  <div className="relative">
+                    <Field
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      placeholder="Password"
+                      className="w-full px-4 py-3 pl-10 pr-10 rounded-lg bg-slate-800 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                    />
+                    <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cyan-400" />
+                    <div
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-cyan-400 cursor-pointer"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
                     </div>
-                    <ErrorMessage name="password" component="div" className="text-red-400 text-sm mt-1" />
+                    <ErrorMessage
+                      name="password"
+                      component="div"
+                      className="text-red-400 text-sm mt-1"
+                    />
                   </div>
 
+                  {/* Remember me */}
                   <div className="flex items-center justify-between">
-                    <label className="flex items-center space-x-2">
+                    <label className="flex items-center text-slate-300 text-sm">
                       <input
                         type="checkbox"
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
-                        className="w-4 h-4 text-cyan-400 bg-slate-800/50 border-slate-600/50 rounded focus:ring-2 focus:ring-cyan-400 focus:ring-offset-0"
+                        className="mr-2"
                       />
-                      <span className="text-sm text-slate-400">Remember me</span>
+                      Remember me
                     </label>
-                    <Link to="#" className="text-sm text-cyan-500 hover:text-cyan-400 font-medium transition-colors duration-300">
+                    <Link to="/forgot-password" className="text-cyan-400 text-sm hover:underline">
                       Forgot password?
                     </Link>
                   </div>
 
+                  {/* Submit */}
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white py-4 rounded-xl font-semibold text-lg shadow-lg shadow-cyan-500/25 hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition duration-300"
                   >
-                    {isSubmitting ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Signing In...
-                      </div>
-                    ) : (
-                      "Sign In"
-                    )}
+                    {isSubmitting ? "Signing in..." : "Sign In"}
                   </button>
 
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-slate-600/50"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-slate-700/30 text-slate-400 backdrop-blur-lg">Or continue with</span>
-                    </div>
+                  {/* Divider */}
+                  <div className="flex items-center justify-center text-slate-400 text-sm">
+                    <span className="mx-2">or</span>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3">
-                    <button
-                      type="button"
-                      className="flex items-center justify-center px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
-                      title="Sign in with Google"
-                    >
-                      <FaGoogle className="text-red-500 text-lg" />
+                  {/* Social logins */}
+                  <div className="flex justify-center space-x-4">
+                    <button type="button" className="text-white hover:text-cyan-400 text-xl">
+                      <FaGoogle />
                     </button>
-                    <button
-                      type="button"
-                      className="flex items-center justify-center px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
-                      title="Sign in with GitHub"
-                    >
-                      <FaGithub className="text-white text-lg" />
+                    <button type="button" className="text-white hover:text-cyan-400 text-xl">
+                      <FaGithub />
                     </button>
-                    <button
-                      type="button"
-                      className="flex items-center justify-center px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl hover:border-cyan-400/50 transition-all duration-300"
-                      title="Sign in with LinkedIn"
-                    >
-                      <FaLinkedin className="text-blue-500 text-lg" />
+                    <button type="button" className="text-white hover:text-cyan-400 text-xl">
+                      <FaLinkedin />
                     </button>
                   </div>
 
-                  <div className="text-center pt-4">
-                    <p className="text-sm text-slate-400">
-                      Don’t have an account?{" "}
-                      <Link to="/register" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-300">
-                        Create one
-                      </Link>
-                    </p>
+                  {/* Register link */}
+                  <div className="text-center text-slate-300 text-sm mt-4">
+                    Don’t have an account?{" "}
+                    <Link to="/register" className="text-cyan-400 hover:underline">
+                      Register
+                    </Link>
                   </div>
+
                 </Form>
               )}
             </Formik>

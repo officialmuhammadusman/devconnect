@@ -1,17 +1,22 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { assets } from '../assets/assets';
 import {
   FaHome, FaSearch, FaUser, FaUserPlus, FaChevronDown, FaChevronUp,
-  FaBell, FaEnvelope, FaCog, FaSignOutAlt, FaUserCircle, FaCode,
+  FaCog, FaSignOutAlt, FaUserCircle, FaCode,
   FaThumbsUp, FaComment, FaUserFriends, FaRegCommentDots, FaLaptopCode,
-  FaServer, FaRobot, FaMobileAlt, FaBriefcase, FaRss
+  FaServer, FaRobot, FaMobileAlt, FaBriefcase, FaRss, FaShare
 } from 'react-icons/fa';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { BsFillChatDotsFill } from 'react-icons/bs';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { socket, connectSocket } from '../utils/socket';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 
-// Custom styles for Deep Cosmos theme
+dayjs.extend(relativeTime);
+
 const deepCosmosStyles = `
   .bg-deep-cosmos-primary { background-color: #1A1A2E; }
   .bg-deep-cosmos-secondary { background-color: #25253A; }
@@ -35,7 +40,7 @@ const deepCosmosStyles = `
 `;
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, notifications, chats, getNotifications, getChats, markAllNotificationsRead, markNotificationRead, loading } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -51,6 +56,56 @@ const Navbar = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    if (user && !loading) {
+      if (!notifications.length) {
+        getNotifications().catch(error => console.error('Failed to fetch notifications:', error));
+      }
+      if (!chats.length) {
+        getChats().catch(error => console.error('Failed to fetch chats:', error));
+      }
+    }
+  }, [user, notifications.length, chats.length, getNotifications, getChats, loading]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const setupSocket = async () => {
+      try {
+        await connectSocket();
+        socket.on('notification', (notification) => {
+          if (notification.userId === user._id) {
+            getNotifications().catch(error => console.error('Failed to fetch notifications:', error));
+          }
+        });
+        socket.on('message', (message) => {
+          if (message.senderId !== user._id) {
+            console.log('New message received, refreshing chats and notifications:', message);
+            getChats().catch(error => console.error('Failed to fetch chats:', error));
+            getNotifications().catch(error => console.error('Failed to fetch notifications:', error));
+          }
+        });
+        socket.on('notifications_read', () => {
+          getNotifications().catch(error => console.error('Failed to fetch notifications:', error));
+        });
+        socket.on('connect_error', (error) => {
+          console.error('Socket.IO connection error:', error.message);
+        });
+      } catch (error) {
+        console.error('Failed to connect Socket.IO:', error);
+      }
+    };
+
+    setupSocket();
+
+    return () => {
+      socket.off('notification');
+      socket.off('message');
+      socket.off('notifications_read');
+      socket.off('connect_error');
+    };
+  }, [user, getNotifications, getChats]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -71,17 +126,14 @@ const Navbar = () => {
     setIsMessageDropdownOpen(false);
   }, [location.pathname]);
 
-  // Mock data for notifications and messages (replace with API calls)
-  const [notifications] = useState([
-    { id: 1, icon: <FaThumbsUp className="text-deep-cosmos-teal text-xl" />, text: "John liked your post", time: "5 min ago", read: false, link: "/notifications" },
-    { id: 2, icon: <FaComment className="text-deep-cosmos-teal text-xl" />, text: "Sarah commented on your project", time: "2 hours ago", read: false, link: "/notifications" },
-    { id: 3, icon: <FaUserFriends className="text-deep-cosmos-magenta text-xl" />, text: "3 new connection requests", time: "1 day ago", read: true, link: "/notifications" },
-  ]);
-
-  const [messages] = useState([
-    { id: 1, avatar: <FaUserCircle className="text-deep-cosmos-light-grey text-2xl" />, name: "Alex Johnson", preview: "Hey, about our project meeting tomorrow...", time: "10:30 AM", unread: true, link: "/chat" },
-    { id: 2, avatar: <FaUserCircle className="text-deep-cosmos-light-grey text-2xl" />, name: "Team DevConnect", preview: "Weekly newsletter: New features released!", time: "Yesterday", unread: false, link: "/chat" },
-  ]);
+  const unreadNotificationsCount = notifications.filter(n => !n.isRead).length;
+  const unreadMessagesCount = chats.reduce((count, chat) => {
+    const otherParticipant = chat.participants.find(p => p._id !== user?._id);
+    // Fallback to checking notifications if unreadCount is not available
+    const unreadFromNotifications = notifications.some(n => n.type === 'message' && !n.isRead && n.senderId === otherParticipant?._id);
+    const unreadFromChat = chat.unreadCount ? chat.unreadCount : 0; // Use unreadCount if available
+    return count + (unreadFromChat > 0 ? unreadFromChat : (unreadFromNotifications ? 1 : 0));
+  }, 0);
 
   const developerCategories = [
     { id: 1, icon: <FaLaptopCode className="text-deep-cosmos-teal text-lg" />, name: "Frontend", link: "/all-developers?category=frontend" },
@@ -90,9 +142,6 @@ const Navbar = () => {
     { id: 4, icon: <FaRobot className="text-deep-cosmos-gold text-lg" />, name: "AI/ML", link: "/all-developers?category=ai" },
     { id: 5, icon: <FaMobileAlt className="text-deep-cosmos-magenta text-lg" />, name: "Mobile Devs", link: "/all-developers?category=mobile" },
   ];
-
-  const unreadNotifications = notifications.filter(n => !n.read).length;
-  const unreadMessages = messages.filter(m => m.unread).length;
 
   const toggleDropdown = (e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen); setIsProfileDropdownOpen(false); setIsNotificationDropdownOpen(false); setIsMessageDropdownOpen(false); };
   const toggleProfileDropdown = (e) => { e.stopPropagation(); setIsProfileDropdownOpen(!isProfileDropdownOpen); setIsDropdownOpen(false); setIsNotificationDropdownOpen(false); setIsMessageDropdownOpen(false); };
@@ -111,22 +160,28 @@ const Navbar = () => {
     }
   };
 
+  const handleMarkAllNotificationsRead = async () => {
+    try {
+      const result = await markAllNotificationsRead();
+      if (result.success) {
+        setIsNotificationDropdownOpen(false);
+      }
+    } catch (error) {
+      console.error('Failed to mark all notifications as read:', error);
+    }
+  };
+
   return (
     <>
       <style>{deepCosmosStyles}</style>
-      
-      {/* First Header: Logo and Login/Register or Profile */}
       <nav className="bg-deep-cosmos-primary shadow-md sticky top-0 z-50 navbar-first">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-          {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center hover:text-deep-cosmos-teal transition-all" onClick={scrollToTop}>
               <img className="h-10 md:h-12 border border-deep-cosmos-grey rounded-sm shadow-sm" src={assets.logo} alt="DevConnect" />
               <span className="ml-3 text-xl font-bold text-deep-cosmos-white hidden sm:inline">DevConnect</span>
             </Link>
           </div>
-
-          {/* Right Side: Login/Register or Profile */}
           <div className="flex items-center space-x-4">
             {user ? (
               <div className="relative" ref={profileRef}>
@@ -169,27 +224,24 @@ const Navbar = () => {
               <div className="flex items-center space-x-4">
                 <Link
                   to="/login"
-                  className="text-deep-cosmos-white hover:text-deep-cosmos-teal px-3 py-2 rounded-md text-sm font-medium navbar-link"
+                  className={`flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/login' ? 'active' : ''}`}
                 >
-                  <FaUser className="inline mr-1" /> Login
+                  <FaUser className="mr-2" /> Login
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-deep-cosmos-teal text-deep-cosmos-primary px-4 py-2 rounded-md hover:bg-deep-cosmos-gold transition-all text-sm font-medium navbar-link"
+                  className={`flex items-center bg-deep-cosmos-teal text-deep-cosmos-primary px-4 py-2 rounded-md hover:bg-deep-cosmos-gold transition-all text-sm font-medium navbar-link ${location.pathname === '/register' ? 'active' : ''}`}
                 >
-                  <FaUserPlus className="inline mr-1" /> Register
+                  <FaUserPlus className="mr-2" /> Register
                 </Link>
               </div>
             )}
           </div>
         </div>
       </nav>
-
-      {/* Second Header: Main Navigation */}
       <nav className="bg-deep-cosmos-secondary shadow-md navbar-second">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14">
-            {/* Desktop Navigation */}
             <ul className="hidden md:flex navbar-menu space-x-6">
               <li>
                 <Link
@@ -270,9 +322,9 @@ const Navbar = () => {
                     >
                       <IoMdNotificationsOutline className="mr-2" />
                       Notifications
-                      {unreadNotifications > 0 && (
-                        <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                          {unreadNotifications}
+                      {unreadNotificationsCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                          {unreadNotificationsCount}
                         </span>
                       )}
                     </button>
@@ -280,26 +332,49 @@ const Navbar = () => {
                       <div className="absolute right-0 mt-2 w-80 bg-deep-cosmos-secondary rounded-lg shadow-xl py-2 z-50 border border-deep-cosmos-grey">
                         <div className="px-4 py-2 border-b border-deep-cosmos-grey flex justify-between items-center bg-deep-cosmos-primary rounded-t-lg">
                           <h3 className="font-semibold text-deep-cosmos-white">Notifications</h3>
-                          <Link to="/notifications" className="text-sm text-deep-cosmos-teal" onClick={() => setIsNotificationDropdownOpen(false)}>
-                            View All
-                          </Link>
+                          <div className="flex space-x-2">
+                            {unreadNotificationsCount > 0 && (
+                              <button
+                                onClick={handleMarkAllNotificationsRead}
+                                className="text-sm text-deep-cosmos-teal hover:text-deep-cosmos-gold"
+                              >
+                                Mark All as Read
+                              </button>
+                            )}
+                            <Link to="/notifications" className="text-sm text-deep-cosmos-teal" onClick={() => setIsNotificationDropdownOpen(false)}>
+                              View All
+                            </Link>
+                          </div>
                         </div>
                         <div className="max-h-96 overflow-y-auto">
-                          {notifications.map(notification => (
-                            <Link
-                              key={notification.id}
-                              to={notification.link}
-                              className={`flex items-start px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal ${!notification.read ? 'bg-deep-cosmos-teal/20' : ''}`}
-                              onClick={() => setIsNotificationDropdownOpen(false)}
-                            >
-                              <div className="flex-shrink-0 mt-1">{notification.icon}</div>
-                              <div className="ml-3 flex-1">
-                                <p className="text-sm font-medium text-deep-cosmos-white">{notification.text}</p>
-                                <p className="text-xs text-deep-cosmos-light-grey">{notification.time}</p>
-                              </div>
-                              {!notification.read && <div className="ml-2 w-2 h-2 bg-deep-cosmos-teal rounded-full"></div>}
-                            </Link>
-                          ))}
+                          {unreadNotificationsCount === 0 ? (
+                            <p className="p-4 text-deep-cosmos-light-grey text-center text-sm">No new notifications.</p>
+                          ) : (
+                            notifications.filter(n => !n.isRead).slice(0, 5).map(notification => (
+                              <Link
+                                key={notification._id}
+                                to="/notifications"
+                                className={`flex items-start px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal ${!notification.isRead ? 'bg-deep-cosmos-teal/20' : ''}`}
+                                onClick={async () => {
+                                  setIsNotificationDropdownOpen(false);
+                                  await markNotificationRead(notification._id);
+                                }}
+                              >
+                                <div className="flex-shrink-0 mt-1">
+                                  {notification.type === 'like' && <FaThumbsUp className="text-deep-cosmos-teal text-xl" />}
+                                  {notification.type === 'comment' && <FaComment className="text-deep-cosmos-teal text-xl" />}
+                                  {notification.type === 'share' && <FaShare className="text-deep-cosmos-teal text-xl" />}
+                                  {notification.type === 'follow' && <FaUserFriends className="text-deep-cosmos-magenta text-xl" />}
+                                  {notification.type === 'message' && <BsFillChatDotsFill className="text-deep-cosmos-teal text-xl" />}
+                                </div>
+                                <div className="ml-3 flex-1">
+                                  <p className="text-sm font-medium text-deep-cosmos-white">{notification.message}</p>
+                                  <p className="text-xs text-deep-cosmos-light-grey">{dayjs(notification.createdAt).fromNow()}</p>
+                                </div>
+                                {!notification.isRead && <div className="ml-2 w-2 h-2 bg-deep-cosmos-teal rounded-full flex-shrink-0"></div>}
+                              </Link>
+                            ))
+                          )}
                         </div>
                       </div>
                     )}
@@ -311,9 +386,9 @@ const Navbar = () => {
                     >
                       <BsFillChatDotsFill className="mr-2" />
                       Messages
-                      {unreadMessages > 0 && (
-                        <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                          {unreadMessages}
+                      {unreadMessagesCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                          {unreadMessagesCount}
                         </span>
                       )}
                     </button>
@@ -326,24 +401,51 @@ const Navbar = () => {
                           </Link>
                         </div>
                         <div className="max-h-96 overflow-y-auto">
-                          {messages.map(message => (
-                            <Link
-                              key={message.id}
-                              to={message.link}
-                              className={`flex items-start px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal ${message.unread ? 'bg-deep-cosmos-teal/20' : ''}`}
-                              onClick={() => setIsMessageDropdownOpen(false)}
-                            >
-                              <div className="flex-shrink-0">{message.avatar}</div>
-                              <div className="ml-3 flex-1 overflow-hidden">
-                                <div className="flex justify-between">
-                                  <p className="text-sm font-medium text-deep-cosmos-white truncate">{message.name}</p>
-                                  <p className="text-xs text-deep-cosmos-light-grey">{message.time}</p>
-                                </div>
-                                <p className="text-sm text-deep-cosmos-light-grey truncate">{message.preview}</p>
-                              </div>
-                              {message.unread && <div className="ml-2 w-2 h-2 bg-deep-cosmos-teal rounded-full"></div>}
-                            </Link>
-                          ))}
+                          {unreadMessagesCount === 0 && chats.length === 0 ? (
+                            <p className="p-4 text-deep-cosmos-light-grey text-center text-sm">No new messages.</p>
+                          ) : (
+                            chats.slice(0, 5).map(chat => {
+                              const otherParticipant = chat.participants?.find(p => p._id !== user?._id);
+                              const hasUnread = notifications.some(n => n.type === 'message' && !n.isRead && n.senderId === otherParticipant?._id);
+                              const unreadFromChat = chat.unreadCount ? chat.unreadCount : 0;
+                              const lastMessagePreview = chat.lastMessage?.content ?
+                                `${chat.lastMessage.senderId === user?._id ? 'You: ' : ''}${chat.lastMessage.content.substring(0, 30)}${chat.lastMessage.content.length > 30 ? '...' : ''}`
+                                : "No messages yet";
+
+                              return (
+                                <Link
+                                  key={chat._id}
+                                  to={`/chat/${chat._id}`}
+                                  className={`flex items-start px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal ${(unreadFromChat > 0 || hasUnread) ? 'bg-deep-cosmos-teal/20' : ''}`}
+                                  onClick={() => setIsMessageDropdownOpen(false)}
+                                >
+                                  <div className="flex-shrink-0 mt-1">
+                                    {otherParticipant?.profileImage ? (
+                                      <img
+                                        src={otherParticipant.profileImage}
+                                        alt={otherParticipant.fullName}
+                                        className="w-8 h-8 rounded-full object-cover"
+                                        onError={(e) => {
+                                          e.target.onerror = null;
+                                          e.target.src = `https://placehold.co/32x32/64748b/ffffff?text=${otherParticipant.fullName?.[0] || '?'}`;
+                                        }}
+                                      />
+                                    ) : (
+                                      <FaUserCircle className="text-deep-cosmos-light-grey text-2xl" />
+                                    )}
+                                  </div>
+                                  <div className="ml-3 flex-1 overflow-hidden">
+                                    <div className="flex justify-between">
+                                      <p className="text-sm font-medium text-deep-cosmos-white truncate">{otherParticipant?.fullName || "Unknown User"}</p>
+                                      <p className="text-xs text-deep-cosmos-light-grey">{chat.lastMessage?.createdAt && dayjs(chat.lastMessage.createdAt).fromNow()}</p>
+                                    </div>
+                                    <p className="text-sm text-deep-cosmos-light-grey truncate">{lastMessagePreview}</p>
+                                  </div>
+                                  {(unreadFromChat > 0 || hasUnread) && <div className="ml-2 w-2 h-2 bg-deep-cosmos-teal rounded-full flex-shrink-0"></div>}
+                                </Link>
+                              );
+                            })
+                          )}
                         </div>
                       </div>
                     )}
@@ -359,8 +461,6 @@ const Navbar = () => {
                 </>
               )}
             </ul>
-
-            {/* Mobile Menu Toggle */}
             <div className="md:hidden">
               <button
                 onClick={toggleMobileMenu}
@@ -377,8 +477,6 @@ const Navbar = () => {
               </button>
             </div>
           </div>
-
-          {/* Mobile Menu */}
           {isMobileMenuOpen && (
             <ul className="md:hidden navbar-menu open bg-deep-cosmos-secondary border-t border-deep-cosmos-grey shadow-lg">
               <li>
@@ -438,6 +536,28 @@ const Navbar = () => {
                   </div>
                 )}
               </li>
+              {!user && (
+                <>
+                  <li>
+                    <Link
+                      to="/login"
+                      className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <FaUser className="mr-2" /> Login
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/register"
+                      className="flex items-center bg-deep-cosmos-teal text-deep-cosmos-primary px-4 py-2 rounded-md hover:bg-deep-cosmos-gold transition-all text-base font-medium"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <FaUserPlus className="mr-2" /> Register
+                    </Link>
+                  </li>
+                </>
+              )}
               {user && (
                 <>
                   <li>
@@ -461,15 +581,14 @@ const Navbar = () => {
                   <li>
                     <Link
                       to="/notifications"
-                      className="flex items-center justify-between text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+                      className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium relative"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <div className="flex items-center">
-                        <IoMdNotificationsOutline className="mr-2" /> Notifications
-                      </div>
-                      {unreadNotifications > 0 && (
-                        <span className="bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                          {unreadNotifications}
+                      <IoMdNotificationsOutline className="mr-2" />
+                      Notifications
+                      {unreadNotificationsCount > 0 && (
+                        <span className="ml-auto bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                          {unreadNotificationsCount}
                         </span>
                       )}
                     </Link>
@@ -477,15 +596,14 @@ const Navbar = () => {
                   <li>
                     <Link
                       to="/chat"
-                      className="flex items-center justify-between text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+                      className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium relative"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <div className="flex items-center">
-                        <BsFillChatDotsFill className="mr-2" /> Messages
-                      </div>
-                      {unreadMessages > 0 && (
-                        <span className="bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                          {unreadMessages}
+                      <BsFillChatDotsFill className="mr-2" />
+                      Messages
+                      {unreadMessagesCount > 0 && (
+                        <span className="ml-auto bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                          {unreadMessagesCount}
                         </span>
                       )}
                     </Link>
