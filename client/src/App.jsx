@@ -14,24 +14,19 @@ const AppContent = () => {
   // Debug: Track renders
   useEffect(() => {
     renderCountRef.current += 1;
-    console.log(`AppContent render count: ${renderCountRef.current}`);
   });
 
   const handleConnect = useCallback(() => {
-    console.log("Socket connected, ID:", socket.id);
     if (user?._id) {
-      console.log(`Emitting register_user for user ID: ${user._id}`);
       socket.emit('register_user', user._id);
     }
   }, [user?._id]);
 
   const handleConnectError = useCallback((error) => {
-    console.error("Socket connection error:", error);
     toast.error('Real-time connection failed. Please refresh.');
   }, []);
 
   const handleNotification = useCallback((notification) => {
-    console.log("Received notification:", notification);
     let message = '';
     switch (notification.type) {
       case 'like':
@@ -53,22 +48,14 @@ const AppContent = () => {
   }, []);
 
   useEffect(() => {
-    console.log("AppContent useEffect running");
-    console.log("Frontend origin:", window.location.origin);
-    console.log("Current token:", token);
-    console.log("Loading state:", loading);
-
     if (!loading && token) {
       socket.auth = { token };
       if (!socket.connected) {
-        console.log("Connecting socket...");
         connectSocket();
       } else if (user?._id) {
-        console.log(`Emitting register_user for user ID: ${user._id}`);
         socket.emit('register_user', user._id);
       }
     } else if (!loading && !token) {
-      console.log("Disconnecting socket due to no token");
       disconnectSocket();
     }
 
@@ -77,12 +64,10 @@ const AppContent = () => {
     socket.on("receive_notification", handleNotification);
 
     return () => {
-      console.log("Cleaning up AppContent useEffect");
       socket.off("connect", handleConnect);
       socket.off("connect_error", handleConnectError);
       socket.off("receive_notification", handleNotification);
       if (!token) {
-        console.log("Disconnecting socket in cleanup");
         disconnectSocket();
       }
     };

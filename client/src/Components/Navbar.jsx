@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { assets } from '../assets/assets';
 import {
@@ -33,16 +32,44 @@ const deepCosmosStyles = `
   .navbar-second { padding: 0.5rem 1rem; }
   .navbar-link:hover, .navbar-button:hover { background-color: #555; border-radius: 4px; }
   .navbar-link.active { background-color: #007bff; border-radius: 4px; }
+  .drawer { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    height: 100%; 
+    width: 80%; 
+    max-width: 300px; 
+    background-color: #25253A; 
+    transform: translateX(-100%); 
+    transition: transform 0.3s ease-in-out; 
+    z-index: 1000; 
+    border-right: 1px solid #404050; 
+  }
+  .drawer.open { 
+    transform: translateX(0); 
+  }
+  .drawer-overlay { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.5); 
+    z-index: 999; 
+    display: none; 
+  }
+  .drawer-overlay.open { 
+    display: block; 
+  }
   @media (max-width: 768px) {
     .navbar-second .navbar-menu { display: none; }
-    .navbar-second .navbar-menu.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background-color: #25253A; padding: 1rem; z-index: 50; }
   }
 `;
 
 const Navbar = () => {
   const { user, logout, notifications, chats, getNotifications, getChats, markAllNotificationsRead, markNotificationRead, loading } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
   const [isMessageDropdownOpen, setIsMessageDropdownOpen] = useState(false);
@@ -119,7 +146,7 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    setIsMobileDrawerOpen(false);
     setIsDropdownOpen(false);
     setIsProfileDropdownOpen(false);
     setIsNotificationDropdownOpen(false);
@@ -129,9 +156,8 @@ const Navbar = () => {
   const unreadNotificationsCount = notifications.filter(n => !n.isRead).length;
   const unreadMessagesCount = chats.reduce((count, chat) => {
     const otherParticipant = chat.participants.find(p => p._id !== user?._id);
-    // Fallback to checking notifications if unreadCount is not available
     const unreadFromNotifications = notifications.some(n => n.type === 'message' && !n.isRead && n.senderId === otherParticipant?._id);
-    const unreadFromChat = chat.unreadCount ? chat.unreadCount : 0; // Use unreadCount if available
+    const unreadFromChat = chat.unreadCount ? chat.unreadCount : 0;
     return count + (unreadFromChat > 0 ? unreadFromChat : (unreadFromNotifications ? 1 : 0));
   }, 0);
 
@@ -147,13 +173,13 @@ const Navbar = () => {
   const toggleProfileDropdown = (e) => { e.stopPropagation(); setIsProfileDropdownOpen(!isProfileDropdownOpen); setIsDropdownOpen(false); setIsNotificationDropdownOpen(false); setIsMessageDropdownOpen(false); };
   const toggleNotificationDropdown = (e) => { e.stopPropagation(); setIsNotificationDropdownOpen(!isNotificationDropdownOpen); setIsDropdownOpen(false); setIsProfileDropdownOpen(false); setIsMessageDropdownOpen(false); };
   const toggleMessageDropdown = (e) => { e.stopPropagation(); setIsMessageDropdownOpen(!isMessageDropdownOpen); setIsDropdownOpen(false); setIsProfileDropdownOpen(false); setIsNotificationDropdownOpen(false); };
-  const toggleMobileMenu = (e) => { e.stopPropagation(); setIsMobileMenuOpen(!isMobileMenuOpen); };
+  const toggleMobileDrawer = (e) => { e.stopPropagation(); setIsMobileDrawerOpen(!isMobileDrawerOpen); };
 
   const handleLogout = async () => {
     try {
       await logout();
       setIsProfileDropdownOpen(false);
-      setIsMobileMenuOpen(false);
+      setIsMobileDrawerOpen(false);
       navigate('/login');
     } catch (error) {
       console.error('Logout failed:', error);
@@ -463,12 +489,12 @@ const Navbar = () => {
             </ul>
             <div className="md:hidden">
               <button
-                onClick={toggleMobileMenu}
+                onClick={toggleMobileDrawer}
                 className="p-2 rounded-md text-deep-cosmos-white hover:text-deep-cosmos-teal"
                 aria-label="Toggle mobile menu"
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  {isMobileMenuOpen ? (
+                  {isMobileDrawerOpen ? (
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   ) : (
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -477,152 +503,167 @@ const Navbar = () => {
               </button>
             </div>
           </div>
-          {isMobileMenuOpen && (
-            <ul className="md:hidden navbar-menu open bg-deep-cosmos-secondary border-t border-deep-cosmos-grey shadow-lg">
-              <li>
-                <Link
-                  to="/"
-                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
-                  onClick={() => { scrollToTop(); setIsMobileMenuOpen(false); }}
-                >
-                  <FaHome className="mr-2" /> Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/projects"
-                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <FaCode className="mr-2" /> Projects
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/jobs"
-                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <FaBriefcase className="mr-2" /> Jobs
-                </Link>
-              </li>
-              <li className="relative">
-                <button
-                  onClick={toggleDropdown}
-                  className="flex items-center justify-between w-full text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
-                >
-                  <span><FaSearch className="inline mr-2" /> Developers</span>
-                  {isDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
-                </button>
-                {isDropdownOpen && (
-                  <div className="ml-4 bg-deep-cosmos-primary rounded-md py-2">
-                    <Link
-                      to="/all-developers"
-                      className="block px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal"
-                      onClick={() => { setIsDropdownOpen(false); setIsMobileMenuOpen(false); }}
-                    >
-                      All Developers
-                    </Link>
-                    {developerCategories.map(category => (
-                      <Link
-                        key={category.id}
-                        to={category.link}
-                        className="block px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal"
-                        onClick={() => { setIsDropdownOpen(false); setIsMobileMenuOpen(false); }}
-                      >
-                        {category.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </li>
-              {!user && (
-                <>
-                  <li>
-                    <Link
-                      to="/login"
-                      className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <FaUser className="mr-2" /> Login
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/register"
-                      className="flex items-center bg-deep-cosmos-teal text-deep-cosmos-primary px-4 py-2 rounded-md hover:bg-deep-cosmos-gold transition-all text-base font-medium"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <FaUserPlus className="mr-2" /> Register
-                    </Link>
-                  </li>
-                </>
-              )}
-              {user && (
-                <>
-                  <li>
-                    <Link
-                      to="/feed"
-                      className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <FaRss className="mr-2" /> Feed
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/create-post"
-                      className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <FaRegCommentDots className="mr-2" /> Create Post
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/notifications"
-                      className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium relative"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <IoMdNotificationsOutline className="mr-2" />
-                      Notifications
-                      {unreadNotificationsCount > 0 && (
-                        <span className="ml-auto bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                          {unreadNotificationsCount}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/chat"
-                      className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium relative"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <BsFillChatDotsFill className="mr-2" />
-                      Messages
-                      {unreadMessagesCount > 0 && (
-                        <span className="ml-auto bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                          {unreadMessagesCount}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/all-users"
-                      className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <FaUserFriends className="mr-2" /> Users
-                    </Link>
-                  </li>
-                </>
-              )}
-            </ul>
-          )}
         </div>
       </nav>
+
+      {/* Mobile Drawer */}
+      <div className={`drawer-overlay ${isMobileDrawerOpen ? 'open' : ''}`} onClick={toggleMobileDrawer}></div>
+      <div className={`drawer ${isMobileDrawerOpen ? 'open' : ''}`}>
+        <div className="flex justify-between items-center p-4 bg-deep-cosmos-primary border-b border-deep-cosmos-grey">
+          <span className="text-xl font-bold text-deep-cosmos-white">Menu</span>
+          <button
+            onClick={toggleMobileDrawer}
+            className="p-2 text-deep-cosmos-white hover:text-deep-cosmos-teal"
+            aria-label="Close drawer"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <ul className="flex flex-col p-4 space-y-2">
+          <li>
+            <Link
+              to="/"
+              className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+              onClick={() => { scrollToTop(); setIsMobileDrawerOpen(false); }}
+            >
+              <FaHome className="mr-2" /> Home
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/projects"
+              className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+              onClick={() => setIsMobileDrawerOpen(false)}
+            >
+              <FaCode className="mr-2" /> Projects
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/jobs"
+              className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+              onClick={() => setIsMobileDrawerOpen(false)}
+            >
+              <FaBriefcase className="mr-2" /> Jobs
+            </Link>
+          </li>
+          <li className="relative">
+            <button
+              onClick={toggleDropdown}
+              className="flex items-center justify-between w-full text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+            >
+              <span><FaSearch className="inline mr-2" /> Developers</span>
+              {isDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
+            </button>
+            {isDropdownOpen && (
+              <div className="ml-4 bg-deep-cosmos-primary rounded-md py-2">
+                <Link
+                  to="/all-developers"
+                  className="block px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal"
+                  onClick={() => { setIsDropdownOpen(false); setIsMobileDrawerOpen(false); }}
+                >
+                  All Developers
+                </Link>
+                {developerCategories.map(category => (
+                  <Link
+                    key={category.id}
+                    to={category.link}
+                    className="block px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal"
+                    onClick={() => { setIsDropdownOpen(false); setIsMobileDrawerOpen(false); }}
+                  >
+                    {category.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </li>
+          {!user && (
+            <>
+              <li>
+                <Link
+                  to="/login"
+                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                >
+                  <FaUser className="mr-2" /> Login
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/register"
+                  className="flex items-center bg-deep-cosmos-teal text-deep-cosmos-primary px-4 py-2 rounded-md hover:bg-deep-cosmos-gold transition-all text-base font-medium"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                >
+                  <FaUserPlus className="mr-2" /> Register
+                </Link>
+              </li>
+            </>
+          )}
+          {user && (
+            <>
+              <li>
+                <Link
+                  to="/feed"
+                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                >
+                  <FaRss className="mr-2" /> Feed
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/create-post"
+                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                >
+                  <FaRegCommentDots className="mr-2" /> Create Post
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/notifications"
+                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium relative"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                >
+                  <IoMdNotificationsOutline className="mr-2" />
+                  Notifications
+                  {unreadNotificationsCount > 0 && (
+                    <span className="ml-auto bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                      {unreadNotificationsCount}
+                    </span>
+                  )}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/chat"
+                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium relative"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                >
+                  <BsFillChatDotsFill className="mr-2" />
+                  Messages
+                  {unreadMessagesCount > 0 && (
+                    <span className="ml-auto bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                      {unreadMessagesCount}
+                    </span>
+                  )}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/all-users"
+                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                >
+                  <FaUserFriends className="mr-2" /> Users
+                </Link>
+              </li>
+            </>
+          )}
+        </ul>
+      </div>
     </>
   );
 };

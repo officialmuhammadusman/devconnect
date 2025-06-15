@@ -102,7 +102,6 @@ const SharedPostDisplay = React.memo(({ sharedPost, currentUser }) => {
 });
 
 const MessageList = React.memo(({ messages, userId }) => {
-  console.log("MessageList rendered");
   return (
     <div className="space-y-4">
       {messages.map((message) => (
@@ -134,7 +133,6 @@ const MessageList = React.memo(({ messages, userId }) => {
 });
 
 const ChatList = React.memo(({ chats, onSelectChat, selectedChatId, user, isLoadingChats, chatsError }) => {
-  console.log("ChatList rendered");
   const getOtherParticipant = useCallback(
     (chat) => chat?.participants?.find((p) => p._id !== user?._id) || null,
     [user]
@@ -219,7 +217,6 @@ const ChatList = React.memo(({ chats, onSelectChat, selectedChatId, user, isLoad
 
 const ChatWindow = React.memo(
   ({ selectedChat, messages, user, onSendMessage, newMessage, setNewMessage, isLoadingMessages, messagesError, typingUsers, messagesEndRef, sharedPost }) => {
-    console.log("ChatWindow rendered");
     const navigate = useNavigate();
     const selectedChatId = selectedChat?._id;
     const getOtherParticipant = useCallback(
@@ -349,7 +346,6 @@ const ChatWindow = React.memo(
 );
 
 const Chat = () => {
-  console.log("Chat rendered");
   const { token, loading: authLoading, getChats, getChatMessages: getMessages, user, sendChatMessage } = useAuth();
   const navigate = useNavigate();
   const { chatId: urlChatId } = useParams();
@@ -368,12 +364,6 @@ const Chat = () => {
 
   const messagesEndRef = useRef(null);
   const prevChatIdRef = useRef(null);
-  const renderCountRef = useRef(0);
-
-  useEffect(() => {
-    renderCountRef.current += 1;
-    console.log(`Chat render count: ${renderCountRef.current}`);
-  });
 
   useEffect(() => {
     if (location.state?.sharedPost) {
@@ -404,11 +394,9 @@ const Chat = () => {
       if (result.success && Array.isArray(result.chats)) {
         setChats((prev) => {
           if (!areEqual(prev, result.chats)) {
-            console.log("Updating chats state");
             localStorage.setItem("cachedChats", JSON.stringify(result.chats));
             return result.chats;
           }
-          console.log("Skipping chats update: equal");
           return prev;
         });
       } else {
@@ -428,10 +416,8 @@ const Chat = () => {
     if (cachedChats.length) {
       setChats((prev) => {
         if (!areEqual(prev, cachedChats)) {
-          console.log("Setting cached chats");
           return cachedChats;
         }
-        console.log("Skipping cached chats: equal");
         return prev;
       });
       setIsLoadingChats(false);
@@ -439,7 +425,6 @@ const Chat = () => {
     fetchAllChats();
   }, [fetchAllChats]);
 
-  // Fetch messages on mount or chat change
   useEffect(() => {
     const selectedChatId = selectedChat?._id || urlChatId;
     if (!selectedChatId || !token || !user) {
@@ -454,10 +439,8 @@ const Chat = () => {
         if (result.success && Array.isArray(result.messages)) {
           setMessages((prev) => {
             if (!areEqual(prev, result.messages)) {
-              console.log("Updating messages state with:", result.messages);
               return result.messages;
             }
-            console.log("Skipping messages update: equal");
             return prev;
           });
         } else {
@@ -483,15 +466,12 @@ const Chat = () => {
     const prevChatId = prevChatIdRef.current;
     if (prevChatId && prevChatId !== selectedChatId) {
       socket.emit("leave_chat", prevChatId);
-      console.log(`Left chat room: ${prevChatId}`);
     }
 
     socket.emit("join_chat", selectedChatId);
-    console.log(`Joined chat room: ${selectedChatId}`);
 
     return () => {
       socket.emit("leave_chat", selectedChatId);
-      console.log(`Cleanup left chat: ${selectedChatId}`);
     };
   }, [selectedChat, urlChatId]);
 
@@ -500,17 +480,14 @@ const Chat = () => {
     if (!selectedChatId) return;
 
     const handleNewMessage = (message) => {
-      console.log("Received message event:", message);
       if (message.chatId === selectedChatId) {
         setMessages((prev) => {
           if (!prev.some((msg) => msg._id && msg._id === message._id)) {
-            console.log("Adding new message:", message);
             if (message.senderId !== user?._id) {
               socket.emit("read_message", { chatId: message.chatId, messageId: message._id });
             }
             return [...prev, { ...message, _id: message._id || Date.now().toString() }];
           }
-          console.log("Skipping duplicate message:", message);
           return prev;
         });
       }
@@ -518,17 +495,14 @@ const Chat = () => {
 
     const debouncedHandleTyping = debounce(({ userId: typingUserId, chatId, isTyping }) => {
       if (chatId === selectedChatId && typingUserId !== user?._id) {
-        console.log(`Typing event: ${typingUserId} isTyping=${isTyping}`);
         setTypingUsers((prev) => {
           const newTyping = {
             ...(prev[chatId] || {}),
             [typingUserId]: isTyping,
           };
           if (areEqual(prev[chatId], newTyping)) {
-            console.log("Skipping typingUsers update: equal");
             return prev;
           }
-          console.log("Updating typingUsers state");
           return { ...prev, [chatId]: newTyping };
         });
       }
@@ -541,10 +515,8 @@ const Chat = () => {
             msg._id === messageId && msg.senderId === user?._id ? { ...msg, isRead: true } : msg
           );
           if (areEqual(prev, newMessages)) {
-            console.log("Skipping messages update for read: equal");
             return prev;
           }
-          console.log("Updating messages for read");
           return newMessages;
         });
       }
@@ -584,7 +556,6 @@ const Chat = () => {
       try {
         const result = await sendChatMessage(selectedChat._id, messagePayload);
         if (result.success) {
-          console.log("Message sent successfully, result:", result);
           setNewMessage("");
           socket.emit("typing", { chatId: selectedChat._id, userId: user._id, isTyping: false });
           toast.success("Message sent successfully!");
@@ -592,7 +563,6 @@ const Chat = () => {
           toast.error(`Failed to send message: ${result.message}`);
         }
       } catch (err) {
-        console.error("Error sending message:", err);
         toast.error("Failed to send message. Please try again.");
       }
     },
@@ -602,7 +572,6 @@ const Chat = () => {
   const handleSelectChat = useCallback(
     (chat) => {
       if (!areEqual(selectedChat, chat)) {
-        console.log(`Selecting chat: ${chat._id}`);
         navigate(`/chat/${chat._id}`, { state: { chat } });
         if (chat._id && user?._id) {
           socket.emit("read_message", { chatId: chat._id });

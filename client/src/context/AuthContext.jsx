@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
@@ -36,13 +35,6 @@ export const AuthProvider = ({ children }) => {
     instance.interceptors.response.use(
       (response) => response,
       (error) => {
-        console.error("API Call Error:", {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status,
-          url: error.config?.url,
-        });
-
         const errorMessage = error.response?.data?.message || error.message || "An unexpected error occurred.";
 
         if (error.response?.status === 401 || error.response?.status === 403) {
@@ -80,7 +72,6 @@ export const AuthProvider = ({ children }) => {
       if (res.data.success) {
         setUser(res.data.data);
       } else {
-        console.warn("Profile fetch failed:", res.data.message);
         logout();
       }
     } catch (error) {
@@ -107,7 +98,6 @@ export const AuthProvider = ({ children }) => {
       toast.success("Registration successful!");
       return { success: true, user: newUser };
     } catch (error) {
-      console.error("Register Error:", error.response?.data || error.message);
       return {
         success: false,
         message: error.response?.data?.message || "Registration failed!",
@@ -130,7 +120,6 @@ export const AuthProvider = ({ children }) => {
       toast.success("Login successful!");
       return { success: true, user: newUser };
     } catch (error) {
-      console.error("Login failed:", error.response?.data || error.message);
       return {
         success: false,
         message: error.response?.data?.message || error.message || "Login failed. Please try again.",
@@ -412,7 +401,6 @@ export const AuthProvider = ({ children }) => {
 
   const commentOnPost = useCallback(async (postId, commentData) => {
     try {
-      console.log("Commenting on postId:", postId, "with data:", commentData);
       const res = await authAxios.post(`${API_BASE_URL}/api/post/comment/${postId}`, commentData, {
         headers: { "Content-Type": "application/json" },
       });
@@ -421,12 +409,6 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: false, message: res.data.message || "Failed to add comment." };
     } catch (error) {
-      console.error("Comment Error:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        url: error.config?.url,
-      });
       return {
         success: false,
         message: error.response?.data?.message || error.message || "Failed to add comment.",
@@ -436,22 +418,14 @@ export const AuthProvider = ({ children }) => {
 
   const sharePost = useCallback(async (postId, shareData = {}) => {
     try {
-      console.log("Initiating Share for postId:", postId, "with data:", shareData);
       const res = await authAxios.post(`${API_BASE_URL}/api/post/share/${postId}`, shareData, {
         headers: { "Content-Type": "application/json" },
       });
-      console.log("Share Response Received:", res.data);
       if (res.data.success) {
         return { success: true, sharedPost: res.data.data };
       }
       return { success: false, message: res.data.message || "Failed to share post." };
     } catch (error) {
-      console.error("Share Post Error:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        url: error.config?.url,
-      });
       return {
         success: false,
         message: error.response?.data?.message || error.message || "Failed to share post.",
