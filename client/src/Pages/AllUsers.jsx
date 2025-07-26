@@ -65,20 +65,20 @@ const AllUsers = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <FaSpinner className="w-12 h-12 text-cyan-400 animate-spin" />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <FaSpinner className="w-12 h-12 text-blue-600 animate-spin" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center px-4">
-        <div className="bg-slate-800/50 backdrop-blur-lg rounded-2xl p-6 text-center border border-slate-700/50">
-          <p className="text-red-400 text-lg">{error}</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-xl p-6 text-center shadow-lg">
+          <p className="text-slate-800 text-lg font-medium">{error}</p>
           <Link
             to="/"
-            className="mt-4 inline-block bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-2 px-4 rounded-xl hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 shadow-lg"
+            className="mt-4 inline-block bg-blue-600 text-slate-50 py-2 px-4 rounded-xl hover:bg-blue-700 transition-all duration-300 shadow-md"
           >
             Back to Home
           </Link>
@@ -88,15 +88,14 @@ const AllUsers = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="relative overflow-hidden mb-8">
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 backdrop-blur-3xl"></div>
           <div className="relative text-center py-6">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-semibold text-slate-800">
               Explore Developers
             </h1>
-            <p className="text-slate-300 mt-2">Connect with talented developers in the community</p>
+            <p className="text-slate-800 mt-2 font-medium">Connect with talented developers in the community</p>
           </div>
         </div>
 
@@ -106,29 +105,29 @@ const AllUsers = () => {
             return (
               <div
                 key={userId}
-                className="bg-slate-800/50 backdrop-blur-lg rounded-2xl p-6 border border-slate-700/50 hover:bg-slate-700/50 transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="bg-white rounded-xl p-6 border border-gray-50 shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
               >
                 <div className="flex items-center space-x-4 mb-4">
                   {user.profileImage ? (
                     <img
                       src={user.profileImage}
                       alt={user.fullName}
-                      className="w-16 h-16 rounded-full object-cover border-4 border-gradient-to-r from-cyan-500 to-purple-500 shadow-2xl"
+                      className="w-16 h-16 rounded-full object-cover border-4 border-blue-600 shadow-md"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center shadow-2xl">
-                      <FaUserCircle className="text-white text-3xl" />
+                    <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center shadow-md">
+                      <FaUserCircle className="text-slate-50 text-3xl" />
                     </div>
                   )}
                   <div>
                     <Link
                       to={`/my-profile/${userId}`}
-                      className="text-xl font-semibold text-white hover:text-cyan-400 transition duration-300"
+                      className="text-xl font-semibold text-slate-800 hover:text-blue-600 transition duration-300"
                     >
                       {user.fullName || "Anonymous"}
                     </Link>
-                    <p className="text-sm text-slate-300">{user.headline || "No headline"}</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-sm text-slate-800 font-medium">{user.headline || "No headline"}</p>
+                    <p className="text-xs text-slate-800">
                       Followers: {user.followersCount || 0} | Following: {user.followingCount || 0}
                     </p>
                   </div>
@@ -136,10 +135,10 @@ const AllUsers = () => {
                 <button
                   onClick={() => handleFollowToggle(userId, user.isFollowing || false)}
                   disabled={isProcessing[userId]}
-                  className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] shadow-lg ${
+                  className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-md ${
                     user.isFollowing
-                      ? "bg-slate-700 text-cyan-400 border-2 border-cyan-400/30 hover:bg-slate-600"
-                      : "bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600 shadow-cyan-500/25"
+                      ? "bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-700 hover:text-slate-50"
+                      : "bg-blue-600 text-slate-50 hover:bg-blue-700"
                   } ${isProcessing[userId] ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   {isProcessing[userId] ? (

@@ -79,15 +79,15 @@ const CreatePost = () => {
   if (authLoading && !token) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex justify-center items-start px-4 py-8 pt-24">
-      <div className="bg-slate-800/50 backdrop-blur-lg rounded-2xl p-8 max-w-lg w-full border border-slate-700/50 shadow-lg hover:shadow-xl transition-all duration-300">
+    <div className="min-h-screen bg-gray-50 flex justify-center items-start px-4 py-8 pt-24">
+      <div className="bg-white rounded-xl p-8 max-w-lg w-full shadow-md hover:shadow-lg transition-all duration-300">
         <div className="flex items-center mb-6">
-          <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center mr-4">
+          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
             <FaRegCommentDots className="text-white text-xl" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Create a Post</h1>
-            <p className="text-sm text-slate-300">Share your thoughts with the community</p>
+            <h1 className="text-2xl font-bold text-slate-800">Create a Post</h1>
+            <p className="text-sm text-slate-600">Share your thoughts with the community</p>
           </div>
         </div>
 
@@ -95,8 +95,8 @@ const CreatePost = () => {
           <div
             className={`mb-6 p-3 rounded-xl text-sm ${
               message.type === "success"
-                ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                : "bg-red-500/20 text-red-400 border border-red-500/30"
+                ? "bg-green-100 text-green-800 border border-green-200"
+                : "bg-red-100 text-red-800 border border-red-200"
             }`}
           >
             {message.text}
@@ -105,7 +105,7 @@ const CreatePost = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="text" className="block text-sm font-medium text-slate-300">
+            <label htmlFor="text" className="block text-sm font-medium text-slate-600">
               Post Content
             </label>
             <textarea
@@ -115,18 +115,18 @@ const CreatePost = () => {
               placeholder="What's on your mind?"
               maxLength={255}
               rows={4}
-              className="mt-1.5 block w-full bg-slate-700/50 border border-slate-600 rounded-xl p-3 text-white placeholder:text-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all sm:text-sm"
+              className="mt-1.5 block w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-slate-800 placeholder:text-slate-600 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all sm:text-sm"
             />
-            <p className="mt-1 text-xs text-slate-400 text-right">
+            <p className="mt-1 text-xs text-slate-600 text-right">
               {text.length} / 255
             </p>
           </div>
 
           <div>
-            <label htmlFor="image" className="block text-sm font-medium text-slate-300">
+            <label htmlFor="image" className="block text-sm font-medium text-slate-600">
               Add an Image (Optional)
             </label>
-            <div className="mt-1.5 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-600 border-dashed rounded-xl bg-slate-700/50">
+            <div className="mt-1.5 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl bg-gray-50">
               {imagePreview ? (
                 <div className="relative">
                   <img
@@ -145,7 +145,7 @@ const CreatePost = () => {
               ) : (
                 <div className="text-center">
                   <svg
-                    className="mx-auto h-12 w-12 text-slate-400"
+                    className="mx-auto h-12 w-12 text-slate-600"
                     stroke="currentColor"
                     fill="none"
                     viewBox="0 0 48 48"
@@ -158,10 +158,10 @@ const CreatePost = () => {
                       strokeLinejoin="round"
                     />
                   </svg>
-                  <div className="flex text-sm text-slate-300">
+                  <div className="flex text-sm text-slate-600">
                     <label
                       htmlFor="image"
-                      className="relative cursor-pointer bg-slate-700/50 rounded-xl font-medium text-cyan-400 hover:text-cyan-300"
+                      className="relative cursor-pointer bg-gray-50 rounded-xl font-medium text-blue-600 hover:text-blue-700"
                     >
                       <span>Upload a file</span>
                       <input
@@ -175,7 +175,7 @@ const CreatePost = () => {
                     </label>
                     <p className="pl-1">or drag and drop</p>
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-600">
                     PNG, JPG up to 5MB
                   </p>
                 </div>
@@ -186,7 +186,7 @@ const CreatePost = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-medium py-3 px-4 rounded-xl hover:from-cyan-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-all duration-300 shadow-lg ${
+            className={`w-full bg-blue-600 text-white font-medium py-3 px-4 rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-all duration-300 shadow-md ${
               isSubmitting ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >

@@ -46,10 +46,10 @@ const SharedPostDisplay = React.memo(({ sharedPost, currentUser }) => {
   const sharedBy = sharedPost.sharedBy || currentUser;
 
   return (
-    <div className="mb-6 p-4 bg-slate-700/50 rounded-lg border border-slate-600/50">
+    <div className="mb-6 p-4 bg-white rounded-lg border border-gray-200 shadow-md">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-2">
-          <span className="text-slate-400 text-sm">Shared by:</span>
+          <span className="text-slate-600 text-sm">Shared by:</span>
           <div className="flex items-center">
             {sharedBy.profileImage ? (
               <img
@@ -58,15 +58,15 @@ const SharedPostDisplay = React.memo(({ sharedPost, currentUser }) => {
                 className="w-5 h-5 rounded-full mr-1"
               />
             ) : (
-              <FaUserCircle className="text-slate-400 mr-1" />
+              <FaUserCircle className="text-slate-600 mr-1" />
             )}
-            <span className="text-slate-200 text-sm font-medium">
+            <span className="text-slate-800 text-sm font-medium">
               {sharedBy.fullName}
             </span>
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-slate-400 text-sm">Original author:</span>
+          <span className="text-slate-600 text-sm">Original author:</span>
           <div className="flex items-center">
             {originalAuthor.profileImage ? (
               <img
@@ -75,9 +75,9 @@ const SharedPostDisplay = React.memo(({ sharedPost, currentUser }) => {
                 className="w-5 h-5 rounded-full mr-1"
               />
             ) : (
-              <FaUserCircle className="text-slate-400 mr-1" />
+              <FaUserCircle className="text-slate-600 mr-1" />
             )}
-            <span className="text-slate-200 text-sm font-medium">
+            <span className="text-slate-800 text-sm font-medium">
               {originalAuthor.fullName}
             </span>
           </div>
@@ -85,7 +85,7 @@ const SharedPostDisplay = React.memo(({ sharedPost, currentUser }) => {
       </div>
       
       {sharedPost.text && (
-        <p className="text-slate-100 mb-3 whitespace-pre-line">{sharedPost.text}</p>
+        <p className="text-slate-800 mb-3 whitespace-pre-line">{sharedPost.text}</p>
       )}
       
       {sharedPost.image && (
@@ -113,7 +113,7 @@ const MessageList = React.memo(({ messages, userId }) => {
             className={`max-w-[75%] p-3 rounded-lg shadow-md relative ${
               message.senderId === userId
                 ? "bg-blue-600 text-white rounded-br-none"
-                : "bg-slate-700 text-slate-100 rounded-bl-none"
+                : "bg-gray-100 text-slate-800 rounded-bl-none"
             }`}
           >
             <p className="break-words">{message.content}</p>
@@ -139,24 +139,24 @@ const ChatList = React.memo(({ chats, onSelectChat, selectedChatId, user, isLoad
   );
 
   return (
-    <div className={`md:w-1/3 w-full bg-slate-800/50 backdrop-blur-lg rounded-xl p-6 border border-slate-700/50 shadow-xl flex flex-col ${selectedChatId && "hidden md:flex"}`}>
-      <h2 className="text-3xl font-bold text-white mb-6 text-center md:text-left">Chats</h2>
+    <div className={`md:w-1/3 w-full bg-white rounded-xl p-6 shadow-md flex flex-col ${selectedChatId && "hidden md:flex"}`}>
+      <h2 className="text-3xl font-bold text-slate-800 mb-6 text-center md:text-left">Chats</h2>
       {chatsError && (
-        <div className="bg-red-500/20 text-red-400 p-4 rounded-xl text-sm border border-red-500/30 mb-6">
+        <div className="bg-red-100 text-red-600 p-4 rounded-xl text-sm border border-red-200 mb-6">
           {chatsError}
         </div>
       )}
       {isLoadingChats ? (
         <div className="flex justify-center items-center h-full">
-          <FaSpinner className="w-10 h-10 text-cyan-400 animate-spin" />
+          <FaSpinner className="w-10 h-10 text-blue-600 animate-spin" />
         </div>
       ) : chats.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-full text-center text-slate-400">
+        <div className="flex flex-col items-center justify-center h-full text-center text-slate-600">
           <FaRegCommentDots className="text-5xl mb-4" />
           <p className="mb-4">You haven't messaged anyone yet — start chatting with fellow developers!</p>
           <Link
             to="/all-users"
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium shadow-lg shadow-cyan-500/25"
+            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 font-medium shadow-md"
           >
             Find Users
           </Link>
@@ -175,34 +175,34 @@ const ChatList = React.memo(({ chats, onSelectChat, selectedChatId, user, isLoad
                 onClick={() => onSelectChat(chat)}
                 className={`flex items-center p-4 rounded-xl mb-3 cursor-pointer border transition-colors duration-200 ${
                   selectedChatId === chat._id
-                    ? "bg-slate-700/70 border-cyan-500 shadow-lg"
-                    : "bg-slate-700/30 border-slate-700/50 hover:bg-slate-700/50"
+                    ? "bg-blue-50 border-blue-600 shadow-md"
+                    : "bg-white border-gray-200 hover:bg-gray-50"
                 }`}
               >
                 {otherParticipant?.profileImage ? (
                   <img
                     src={otherParticipant.profileImage}
                     alt={otherParticipant.fullName || "User"}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-slate-600"
+                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-300"
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = `https://placehold.co/48x48/64748b/ffffff?text=${otherParticipant.fullName?.[0] || "?"}`;
                     }}
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
                     <FaUserCircle className="text-white text-lg" />
                   </div>
                 )}
                 <div className="ml-4 flex-1">
-                  <p className="text-white font-semibold">{otherParticipant?.fullName || "Unknown User"}</p>
-                  <p className="text-slate-400 text-sm truncate">{lastMessagePreview}</p>
+                  <p className="text-slate-800 font-semibold">{otherParticipant?.fullName || "Unknown User"}</p>
+                  <p className="text-slate-600 text-sm truncate">{lastMessagePreview}</p>
                 </div>
-                <div className="text-slate-400 text-xs ml-auto flex-shrink-0">
+                <div className="text-slate-600 text-xs ml-auto flex-shrink-0">
                   {chat.lastMessage?.createdAt && dayjs(chat.lastMessage.createdAt).fromNow()}
                 </div>
                 {chat.unread > 0 && (
-                  <span className="ml-3 bg-blue-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="ml-3 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                     {chat.unread}
                   </span>
                 )}
@@ -247,13 +247,13 @@ const ChatWindow = React.memo(
     }, [newMessage, onSendMessage]);
 
     return (
-      <div className={`w-full ${selectedChat ? 'md:w-2/3' : ''} bg-slate-800/50 backdrop-blur-lg rounded-xl border border-slate-700/50 shadow-xl flex flex-col h-[calc(100vh-10rem)] md:h-auto`}>
+      <div className={`w-full ${selectedChat ? 'md:w-2/3' : ''} bg-white rounded-xl border border-gray-200 shadow-md flex flex-col h-[calc(100vh-10rem)] md:h-auto`}>
         {selectedChat ? (
           <>
-            <div className="flex items-center p-4 border-b border-slate-700 bg-slate-700/60 rounded-t-xl">
+            <div className="flex items-center p-4 border-b border-gray-200 bg-gray-50 rounded-t-xl">
               <button 
                 onClick={() => navigate('/chat')}
-                className="text-white mr-4 p-2 rounded-full hover:bg-slate-600 md:hidden"
+                className="text-slate-800 mr-4 p-2 rounded-full hover:bg-gray-200 md:hidden"
                 title="Back to Chats"
               >
                 <FaArrowLeft size={20} />
@@ -262,30 +262,30 @@ const ChatWindow = React.memo(
                 <img
                   src={otherParticipant.profileImage}
                   alt={otherParticipant.fullName || "User"}
-                  className="w-10 h-10 rounded-full object-cover border-2 border-slate-600"
+                  className="w-10 h-10 rounded-full object-cover border-2 border-gray-300"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = `https://placehold.co/40x40/64748b/ffffff?text=${otherParticipant?.fullName?.[0] || '?'}`;
                   }}
                 />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
                   <FaUserCircle className="text-white text-lg" />
                 </div>
               )}
-              <h2 className="text-xl font-semibold text-white ml-3">
+              <h2 className="text-xl font-semibold text-slate-800 ml-3">
                 {otherParticipant?.fullName || "Unknown User"}
               </h2>
             </div>
             <div className="flex-1 p-4 overflow-y-auto custom-scrollbar">
               {isLoadingMessages ? (
                 <div className="flex justify-center items-center h-full">
-                  <FaSpinner className="w-8 h-8 text-cyan-400 animate-spin" />
+                  <FaSpinner className="w-8 h-8 text-blue-600 animate-spin" />
                 </div>
               ) : messagesError ? (
-                <div className="text-red-400 text-center">{messagesError}</div>
+                <div className="text-red-600 text-center">{messagesError}</div>
               ) : messages.length === 0 ? (
-                <div className="text-slate-400 text-center py-10">
+                <div className="text-slate-600 text-center py-10">
                   <SharedPostDisplay sharedPost={sharedPost} currentUser={user} />
                   Start the conversation 👋
                 </div>
@@ -298,11 +298,11 @@ const ChatWindow = React.memo(
               )}
             </div>
             {typingUsers[selectedChatId] && Object.entries(typingUsers[selectedChatId] || {}).some(([id, isTyping]) => isTyping && id !== user?._id) && (
-              <p className="text-slate-400 text-sm text-center mb-2">
+              <p className="text-slate-600 text-sm text-center mb-2">
                 {otherParticipant?.fullName || "Someone"} is typing...
               </p>
             )}
-            <div className="p-4 border-t border-slate-700 bg-slate-700/60 rounded-b-xl">
+            <div className="p-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
               <div className="flex items-center space-x-3">
                 <textarea
                   value={newMessage}
@@ -313,13 +313,13 @@ const ChatWindow = React.memo(
                       handleMessage();
                     }
                   }}
-                  className="flex-1 p-3 rounded-lg bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none h-12 overflow-hidden"
+                  className="flex-1 p-3 rounded-lg bg-white text-slate-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none h-12 overflow-hidden"
                   placeholder="Type your message..."
                   rows="1"
                 />
                 <button
                   onClick={handleMessage}
-                  className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full hover:from-blue-600 hover:to-purple-600 transition-all duration-300 shadow-md"
+                  className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all duration-300 shadow-md"
                   title="Send Message"
                 >
                   <FaPaperPlane />
@@ -328,13 +328,13 @@ const ChatWindow = React.memo(
             </div>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-center text-slate-400">
-            <FaRegCommentDots className="text-6xl mb-6 text-purple-400" />
+          <div className="flex flex-col items-center justify-center h-full text-center text-slate-600">
+            <FaRegCommentDots className="text-6xl mb-6 text-blue-600" />
             <h3 className="text-xl font-semibold mb-2">Select a chat to start messaging</h3>
             <p className="mb-4">Or find a user to initiate a new conversation.</p>
             <Link
               to="/all-users"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium shadow-lg shadow-cyan-500/25"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 font-medium shadow-md"
             >
               Find Users
             </Link>
@@ -562,6 +562,7 @@ const Chat = () => {
         } else {
           toast.error(`Failed to send message: ${result.message}`);
         }
+      // eslint-disable-next-line no-unused-vars
       } catch (err) {
         toast.error("Failed to send message. Please try again.");
       }
@@ -585,22 +586,21 @@ const Chat = () => {
 
   if (authLoading || isLoadingChats) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <FaSpinner className="w-10 h-10 text-cyan-400 animate-spin" />
-        <p className="ml-4 text-white">Loading chats...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <FaSpinner className="w-10 h-10 text-blue-600 animate-spin" />
+        <p className="ml-4 text-slate-800">Loading chats...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pt-20 pb-12 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row">
-      <div className="md:hidden relative overflow-hidden mb-8 rounded-xl shadow-lg w-full">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 backdrop-blur-3xl"></div>
+    <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row">
+      <div className="md:hidden relative overflow-hidden mb-8 rounded-xl shadow-md w-full">
         <div className="relative text-center py-6">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold text-slate-800">
             Messages
           </h1>
-          <p className="text-slate-300 mt-2">Connect with your network</p>
+          <p className="text-slate-600 mt-2">Connect with your network</p>
         </div>
       </div>
       <div className="flex w-full md:space-x-6 h-[calc(100vh-10rem)]">

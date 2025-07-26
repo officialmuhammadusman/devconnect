@@ -3,32 +3,32 @@ import { FaChevronDown, FaChevronUp, FaUserShield, FaUserFriends, FaEdit, FaRock
 
 const faqs = [
   {
-    icon: <FaUserShield className="w-5 h-5 text-cyan-400 mr-2 shrink-0" />,
+    icon: <FaUserShield className="w-5 h-5 text-blue-600 mr-2 shrink-0" />,
     question: "Is DevConnect free to use?",
     answer: "Yes! DevConnect is completely free for developers. Sign up and start building your network today.",
   },
   {
-    icon: <FaUserFriends className="w-5 h-5 text-cyan-400 mr-2 shrink-0" />,
+    icon: <FaUserFriends className="w-5 h-5 text-blue-600 mr-2 shrink-0" />,
     question: "Who can join DevConnect?",
     answer: "Any developer, whether beginner or experienced, is welcome! All tech stacks, all levels.",
   },
   {
-    icon: <FaRocket className="w-5 h-5 text-cyan-400 mr-2 shrink-0" />,
+    icon: <FaRocket className="w-5 h-5 text-blue-600 mr-2 shrink-0" />,
     question: "What can I do after creating a profile?",
     answer: "You can post content, follow other developers, chat in real time, and showcase your skills.",
   },
   {
-    icon: <FaEdit className="w-5 h-5 text-cyan-400 mr-2 shrink-0" />,
+    icon: <FaEdit className="w-5 h-5 text-blue-600 mr-2 shrink-0" />,
     question: "Can I edit my profile later?",
     answer: "Absolutely! You can update your image, bio, skills, and social links any time under “Edit Profile.”",
   },
   {
-    icon: <FaUserPlus className="w-5 h-5 text-cyan-400 mr-2 shrink-0" />,
+    icon: <FaUserPlus className="w-5 h-5 text-blue-600 mr-2 shrink-0" />,
     question: "How do I connect with other developers?",
     answer: "Just visit their profile and follow them. You can also chat directly or engage through their posts.",
   },
   {
-    icon: <FaMobileAlt className="w-5 h-5 text-cyan-400 mr-2 shrink-0" />,
+    icon: <FaMobileAlt className="w-5 h-5 text-blue-600 mr-2 shrink-0" />,
     question: "Is there a mobile app for DevConnect?",
     answer: "Not yet — but we’re working on it! For now, enjoy full functionality on mobile browsers.",
   },
@@ -42,15 +42,12 @@ const FAQSSection = () => {
   };
 
   return (
-    <section id="faq" className="relative bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
-      {/* Glassmorphic Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/5 backdrop-blur-sm"></div>
-
+    <section id="faq" className="relative bg-gray-50 py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto text-center relative z-10">
-        <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold mb-6 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+        <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold mb-6 text-gray-800">
           Got Questions? We’ve Got Answers.
         </h2>
-        <p className="text-slate-300 text-lg md:text-xl mb-12 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-gray-600 text-lg md:text-xl mb-12 max-w-3xl mx-auto leading-relaxed">
           Everything you need to know before joining the DevConnect community.
         </p>
 
@@ -58,7 +55,7 @@ const FAQSSection = () => {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="bg-slate-700/30 backdrop-blur-lg rounded-xl p-5 border border-slate-600/30 hover:border-cyan-400/50 transition-all duration-300 shadow-md hover:shadow-lg"
+              className="bg-white rounded-xl p-5 border border-gray-200 hover:border-blue-600/50 transition-all duration-300 shadow-md hover:shadow-lg"
             >
               <button
                 className="flex justify-between items-center w-full text-left"
@@ -66,18 +63,18 @@ const FAQSSection = () => {
               >
                 <div className="flex items-center">
                   {faq.icon}
-                  <span className="text-white font-semibold text-base md:text-lg">
+                  <span className="text-gray-800 font-semibold text-base md:text-lg">
                     {faq.question}
                   </span>
                 </div>
                 {activeIndex === index ? (
-                  <FaChevronUp className="w-5 h-5 text-cyan-400" />
+                  <FaChevronUp className="w-5 h-5 text-blue-600" />
                 ) : (
-                  <FaChevronDown className="w-5 h-5 text-cyan-400" />
+                  <FaChevronDown className="w-5 h-5 text-blue-600" />
                 )}
               </button>
               {activeIndex === index && (
-                <div className="mt-3 text-slate-300 text-sm md:text-base leading-relaxed pl-8">
+                <div className="mt-3 text-gray-600 text-sm md:text-base leading-relaxed pl-8">
                   {faq.answer}
                 </div>
               )}

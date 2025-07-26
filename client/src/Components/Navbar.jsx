@@ -16,22 +16,19 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
 
-const deepCosmosStyles = `
-  .bg-deep-cosmos-primary { background-color: #1A1A2E; }
-  .bg-deep-cosmos-secondary { background-color: #25253A; }
-  .text-deep-cosmos-white { color: #FFFFFF; }
-  .text-deep-cosmos-light-grey { color: #F0F0F0; }
-  .text-deep-cosmos-teal { color: #5DE0E6; }
-  .bg-deep-cosmos-teal { background-color: #5DE0E6; }
-  .bg-deep-cosmos-gold { background-color: #FFA500; }
-  .text-deep-cosmos-gold { color: #FFA500; }
-  .bg-deep-cosmos-magenta { background-color: #C77DFF; }
-  .text-deep-cosmos-magenta { color: #C77DFF; }
-  .border-deep-cosmos-grey { border-color: #404050; }
+const styles = `
+  .bg-primary { background-color: #f8fafc; }
+  .bg-secondary { background-color: #ffffff; }
+  .text-primary { color: #1e293b; }
+  .text-secondary { color: #475569; }
+  .text-accent { color: #2563eb; }
+  .bg-accent { background-color: #2563eb; }
+  .bg-accent-hover { background-color: #1d4ed8; }
+  .border-grey { border-color: #e5e7eb; }
   .navbar-first { padding: 0.5rem 1rem; }
   .navbar-second { padding: 0.5rem 1rem; }
-  .navbar-link:hover, .navbar-button:hover { background-color: #555; border-radius: 4px; }
-  .navbar-link.active { background-color: #007bff; border-radius: 4px; }
+  .navbar-link:hover, .navbar-button:hover { background-color: #f1f5f9; border-radius: 4px; }
+  .navbar-link.active { background-color: #dbeafe; border-radius: 4px; }
   .drawer { 
     position: fixed; 
     top: 0; 
@@ -39,11 +36,11 @@ const deepCosmosStyles = `
     height: 100%; 
     width: 80%; 
     max-width: 300px; 
-    background-color: #25253A; 
+    background-color: #ffffff; 
     transform: translateX(-100%); 
     transition: transform 0.3s ease-in-out; 
     z-index: 1000; 
-    border-right: 1px solid #404050; 
+    border-right: 1px solid #e5e7eb; 
   }
   .drawer.open { 
     transform: translateX(0); 
@@ -162,11 +159,11 @@ const Navbar = () => {
   }, 0);
 
   const developerCategories = [
-    { id: 1, icon: <FaLaptopCode className="text-deep-cosmos-teal text-lg" />, name: "Frontend", link: "/all-developers?category=frontend" },
-    { id: 2, icon: <FaServer className="text-deep-cosmos-teal text-lg" />, name: "Backend", link: "/all-developers?category=backend" },
-    { id: 3, icon: <FaLaptopCode className="text-deep-cosmos-teal text-lg" />, name: "Full Stack", link: "/all-developers?category=fullstack" },
-    { id: 4, icon: <FaRobot className="text-deep-cosmos-gold text-lg" />, name: "AI/ML", link: "/all-developers?category=ai" },
-    { id: 5, icon: <FaMobileAlt className="text-deep-cosmos-magenta text-lg" />, name: "Mobile Devs", link: "/all-developers?category=mobile" },
+    { id: 1, icon: <FaLaptopCode className="text-accent text-lg" />, name: "Frontend", link: "/all-developers?category=frontend" },
+    { id: 2, icon: <FaServer className="text-accent text-lg" />, name: "Backend", link: "/all-developers?category=backend" },
+    { id: 3, icon: <FaLaptopCode className="text-accent text-lg" />, name: "Full Stack", link: "/all-developers?category=fullstack" },
+    { id: 4, icon: <FaRobot className="text-accent text-lg" />, name: "AI/ML", link: "/all-developers?category=ai" },
+    { id: 5, icon: <FaMobileAlt className="text-accent text-lg" />, name: "Mobile Devs", link: "/all-developers?category=mobile" },
   ];
 
   const toggleDropdown = (e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen); setIsProfileDropdownOpen(false); setIsNotificationDropdownOpen(false); setIsMessageDropdownOpen(false); };
@@ -199,13 +196,13 @@ const Navbar = () => {
 
   return (
     <>
-      <style>{deepCosmosStyles}</style>
-      <nav className="bg-deep-cosmos-primary shadow-md sticky top-0 z-50 navbar-first">
+      <style>{styles}</style>
+      <nav className="bg-primary shadow-md sticky top-0 z-50 navbar-first">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="flex items-center hover:text-deep-cosmos-teal transition-all" onClick={scrollToTop}>
-              <img className="h-10 md:h-12 border border-deep-cosmos-grey rounded-sm shadow-sm" src={assets.logo} alt="DevConnect" />
-              <span className="ml-3 text-xl font-bold text-deep-cosmos-white hidden sm:inline">DevConnect</span>
+            <Link to="/" className="flex items-center hover:text-accent transition-all" onClick={scrollToTop}>
+              <img className="h-10 md:h-12 border border-grey rounded-sm shadow-sm" src={assets.logo} alt="DevConnect" />
+              <span className="ml-3 text-xl font-semibold text-primary hidden sm:inline">DevConnect</span>
             </Link>
           </div>
           <div className="flex items-center space-x-4">
@@ -213,33 +210,33 @@ const Navbar = () => {
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={toggleProfileDropdown}
-                  className="flex items-center p-1 rounded-full hover:text-deep-cosmos-teal transition-all"
+                  className="flex items-center p-1 rounded-full hover:text-accent transition-all"
                   aria-label="Profile menu"
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-deep-cosmos-teal to-deep-cosmos-magenta flex items-center justify-center overflow-hidden">
-                    <FaUserCircle className="text-deep-cosmos-white text-xl" />
+                  <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center overflow-hidden">
+                    <FaUserCircle className="text-white text-xl" />
                   </div>
-                  <span className="ml-2 text-deep-cosmos-white hidden md:inline">{user.fullName || 'User'}</span>
+                  <span className="ml-2 text-primary hidden md:inline">{user.fullName || 'User'}</span>
                 </button>
                 {isProfileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-deep-cosmos-secondary rounded-lg shadow-xl py-2 z-50 border border-deep-cosmos-grey">
+                  <div className="absolute right-0 mt-2 w-48 bg-secondary rounded-lg shadow-md py-2 z-50 border border-grey">
                     <Link
                       to={`/my-profile/${user._id}`}
-                      className="flex items-center px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal transition-all"
+                      className="flex items-center px-4 py-2 text-secondary hover:text-accent transition-all"
                       onClick={() => setIsProfileDropdownOpen(false)}
                     >
                       <FaUserCircle className="mr-2" /> Profile
                     </Link>
                     <Link
                       to="/edit-profile"
-                      className="flex items-center px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal transition-all"
+                      className="flex items-center px-4 py-2 text-secondary hover:text-accent transition-all"
                       onClick={() => setIsProfileDropdownOpen(false)}
                     >
                       <FaCog className="mr-2" /> Edit Profile
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left flex items-center px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal transition-all"
+                      className="w-full text-left flex items-center px-4 py-2 text-secondary hover:text-accent transition-all"
                     >
                       <FaSignOutAlt className="mr-2" /> Logout
                     </button>
@@ -250,13 +247,13 @@ const Navbar = () => {
               <div className="flex items-center space-x-4">
                 <Link
                   to="/login"
-                  className={`flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/login' ? 'active' : ''}`}
+                  className={`flex items-center text-primary hover:text-accent px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/login' ? 'active' : ''}`}
                 >
                   <FaUser className="mr-2" /> Login
                 </Link>
                 <Link
                   to="/register"
-                  className={`flex items-center bg-deep-cosmos-teal text-deep-cosmos-primary px-4 py-2 rounded-md hover:bg-deep-cosmos-gold transition-all text-sm font-medium navbar-link ${location.pathname === '/register' ? 'active' : ''}`}
+                  className={`flex items-center bg-accent text-white px-4 py-2 rounded-md hover:bg-accent-hover transition-all text-sm font-medium navbar-link ${location.pathname === '/register' ? 'active' : ''}`}
                 >
                   <FaUserPlus className="mr-2" /> Register
                 </Link>
@@ -265,14 +262,14 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
-      <nav className="bg-deep-cosmos-secondary shadow-md navbar-second">
+      <nav className="bg-secondary shadow-md navbar-second">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14">
             <ul className="hidden md:flex navbar-menu space-x-6">
               <li>
                 <Link
                   to="/"
-                  className={`flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/' ? 'active' : ''}`}
+                  className={`flex items-center text-primary hover:text-accent px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/' ? 'active' : ''}`}
                   onClick={scrollToTop}
                 >
                   <FaHome className="mr-2" /> Home
@@ -281,7 +278,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/projects"
-                  className={`flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/projects' ? 'active' : ''}`}
+                  className={`flex items-center text-primary hover:text-accent px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/projects' ? 'active' : ''}`}
                 >
                   <FaCode className="mr-2" /> Projects
                 </Link>
@@ -289,7 +286,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/jobs"
-                  className={`flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/jobs' ? 'active' : ''}`}
+                  className={`flex items-center text-primary hover:text-accent px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/jobs' ? 'active' : ''}`}
                 >
                   <FaBriefcase className="mr-2" /> Jobs
                 </Link>
@@ -297,15 +294,15 @@ const Navbar = () => {
               <li className="relative" ref={dropdownRef}>
                 <button
                   onClick={toggleDropdown}
-                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-3 py-2 rounded-md text-sm font-medium navbar-button"
+                  className="flex items-center text-primary hover:text-accent px-3 py-2 rounded-md text-sm font-medium navbar-button"
                 >
                   <FaSearch className="mr-2" /> Developers {isDropdownOpen ? <FaChevronUp className="ml-1" /> : <FaChevronDown className="ml-1" />}
                 </button>
                 {isDropdownOpen && (
-                  <div className="absolute left-0 mt-2 w-56 bg-deep-cosmos-secondary rounded-lg shadow-xl py-2 z-50 border border-deep-cosmos-grey">
+                  <div className="absolute left-0 mt-2 w-56 bg-secondary rounded-lg shadow-md py-2 z-50 border border-grey">
                     <Link
                       to="/all-developers"
-                      className="flex items-center px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal"
+                      className="flex items-center px-4 py-2 text-secondary hover:text-accent"
                       onClick={() => setIsDropdownOpen(false)}
                     >
                       <FaUserFriends className="mr-2" /> All Developers
@@ -314,7 +311,7 @@ const Navbar = () => {
                       <Link
                         key={category.id}
                         to={category.link}
-                        className="flex items-center px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal"
+                        className="flex items-center px-4 py-2 text-secondary hover:text-accent"
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         {category.icon} <span className="ml-2">{category.name}</span>
@@ -328,7 +325,7 @@ const Navbar = () => {
                   <li>
                     <Link
                       to="/feed"
-                      className={`flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/feed' ? 'active' : ''}`}
+                      className={`flex items-center text-primary hover:text-accent px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/feed' ? 'active' : ''}`}
                     >
                       <FaRss className="mr-2" /> Feed
                     </Link>
@@ -336,7 +333,7 @@ const Navbar = () => {
                   <li>
                     <Link
                       to="/create-post"
-                      className={`flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/create-post' ? 'active' : ''}`}
+                      className={`flex items-center text-primary hover:text-accent px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/create-post' ? 'active' : ''}`}
                     >
                       <FaRegCommentDots className="mr-2" /> Create Post
                     </Link>
@@ -344,7 +341,7 @@ const Navbar = () => {
                   <li className="relative" ref={notificationRef}>
                     <button
                       onClick={toggleNotificationDropdown}
-                      className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-3 py-2 rounded-md text-sm font-medium navbar-button relative"
+                      className="flex items-center text-primary hover:text-accent px-3 py-2 rounded-md text-sm font-medium navbar-button relative"
                     >
                       <IoMdNotificationsOutline className="mr-2" />
                       Notifications
@@ -355,49 +352,49 @@ const Navbar = () => {
                       )}
                     </button>
                     {isNotificationDropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-80 bg-deep-cosmos-secondary rounded-lg shadow-xl py-2 z-50 border border-deep-cosmos-grey">
-                        <div className="px-4 py-2 border-b border-deep-cosmos-grey flex justify-between items-center bg-deep-cosmos-primary rounded-t-lg">
-                          <h3 className="font-semibold text-deep-cosmos-white">Notifications</h3>
+                      <div className="absolute right-0 mt-2 w-80 bg-secondary rounded-lg shadow-md py-2 z-50 border border-grey">
+                        <div className="px-4 py-2 border-b border-grey flex justify-between items-center bg-primary rounded-t-lg">
+                          <h3 className="font-semibold text-primary">Notifications</h3>
                           <div className="flex space-x-2">
                             {unreadNotificationsCount > 0 && (
                               <button
                                 onClick={handleMarkAllNotificationsRead}
-                                className="text-sm text-deep-cosmos-teal hover:text-deep-cosmos-gold"
+                                className="text-sm text-accent hover:text-accent-hover"
                               >
                                 Mark All as Read
                               </button>
                             )}
-                            <Link to="/notifications" className="text-sm text-deep-cosmos-teal" onClick={() => setIsNotificationDropdownOpen(false)}>
+                            <Link to="/notifications" className="text-sm text-accent" onClick={() => setIsNotificationDropdownOpen(false)}>
                               View All
                             </Link>
                           </div>
                         </div>
                         <div className="max-h-96 overflow-y-auto">
                           {unreadNotificationsCount === 0 ? (
-                            <p className="p-4 text-deep-cosmos-light-grey text-center text-sm">No new notifications.</p>
+                            <p className="p-4 text-secondary text-center text-sm">No new notifications.</p>
                           ) : (
                             notifications.filter(n => !n.isRead).slice(0, 5).map(notification => (
                               <Link
                                 key={notification._id}
                                 to="/notifications"
-                                className={`flex items-start px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal ${!notification.isRead ? 'bg-deep-cosmos-teal/20' : ''}`}
+                                className={`flex items-start px-4 py-2 text-secondary hover:text-accent ${!notification.isRead ? 'bg-accent/10' : ''}`}
                                 onClick={async () => {
                                   setIsNotificationDropdownOpen(false);
                                   await markNotificationRead(notification._id);
                                 }}
                               >
                                 <div className="flex-shrink-0 mt-1">
-                                  {notification.type === 'like' && <FaThumbsUp className="text-deep-cosmos-teal text-xl" />}
-                                  {notification.type === 'comment' && <FaComment className="text-deep-cosmos-teal text-xl" />}
-                                  {notification.type === 'share' && <FaShare className="text-deep-cosmos-teal text-xl" />}
-                                  {notification.type === 'follow' && <FaUserFriends className="text-deep-cosmos-magenta text-xl" />}
-                                  {notification.type === 'message' && <BsFillChatDotsFill className="text-deep-cosmos-teal text-xl" />}
+                                  {notification.type === 'like' && <FaThumbsUp className="text-accent text-xl" />}
+                                  {notification.type === 'comment' && <FaComment className="text-accent text-xl" />}
+                                  {notification.type === 'share' && <FaShare className="text-accent text-xl" />}
+                                  {notification.type === 'follow' && <FaUserFriends className="text-accent text-xl" />}
+                                  {notification.type === 'message' && <BsFillChatDotsFill className="text-accent text-xl" />}
                                 </div>
                                 <div className="ml-3 flex-1">
-                                  <p className="text-sm font-medium text-deep-cosmos-white">{notification.message}</p>
-                                  <p className="text-xs text-deep-cosmos-light-grey">{dayjs(notification.createdAt).fromNow()}</p>
+                                  <p className="text-sm font-medium text-primary">{notification.message}</p>
+                                  <p className="text-xs text-secondary">{dayjs(notification.createdAt).fromNow()}</p>
                                 </div>
-                                {!notification.isRead && <div className="ml-2 w-2 h-2 bg-deep-cosmos-teal rounded-full flex-shrink-0"></div>}
+                                {!notification.isRead && <div className="ml-2 w-2 h-2 bg-accent rounded-full flex-shrink-0"></div>}
                               </Link>
                             ))
                           )}
@@ -408,7 +405,7 @@ const Navbar = () => {
                   <li className="relative" ref={messageRef}>
                     <button
                       onClick={toggleMessageDropdown}
-                      className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-3 py-2 rounded-md text-sm font-medium navbar-button relative"
+                      className="flex items-center text-primary hover:text-accent px-3 py-2 rounded-md text-sm font-medium navbar-button relative"
                     >
                       <BsFillChatDotsFill className="mr-2" />
                       Messages
@@ -419,16 +416,16 @@ const Navbar = () => {
                       )}
                     </button>
                     {isMessageDropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-80 bg-deep-cosmos-secondary rounded-lg shadow-xl py-2 z-50 border border-deep-cosmos-grey">
-                        <div className="px-4 py-2 border-b border-deep-cosmos-grey flex justify-between items-center bg-deep-cosmos-primary rounded-t-lg">
-                          <h3 className="font-semibold text-deep-cosmos-white">Messages</h3>
-                          <Link to="/chat" className="text-sm text-deep-cosmos-teal" onClick={() => setIsMessageDropdownOpen(false)}>
+                      <div className="absolute right-0 mt-2 w-80 bg-secondary rounded-lg shadow-md py-2 z-50 border border-grey">
+                        <div className="px-4 py-2 border-b border-grey flex justify-between items-center bg-primary rounded-t-lg">
+                          <h3 className="font-semibold text-primary">Messages</h3>
+                          <Link to="/chat" className="text-sm text-accent" onClick={() => setIsMessageDropdownOpen(false)}>
                             View All
                           </Link>
                         </div>
                         <div className="max-h-96 overflow-y-auto">
                           {unreadMessagesCount === 0 && chats.length === 0 ? (
-                            <p className="p-4 text-deep-cosmos-light-grey text-center text-sm">No new messages.</p>
+                            <p className="p-4 text-secondary text-center text-sm">No new messages.</p>
                           ) : (
                             chats.slice(0, 5).map(chat => {
                               const otherParticipant = chat.participants?.find(p => p._id !== user?._id);
@@ -442,7 +439,7 @@ const Navbar = () => {
                                 <Link
                                   key={chat._id}
                                   to={`/chat/${chat._id}`}
-                                  className={`flex items-start px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal ${(unreadFromChat > 0 || hasUnread) ? 'bg-deep-cosmos-teal/20' : ''}`}
+                                  className={`flex items-start px-4 py-2 text-secondary hover:text-accent ${(unreadFromChat > 0 || hasUnread) ? 'bg-accent/10' : ''}`}
                                   onClick={() => setIsMessageDropdownOpen(false)}
                                 >
                                   <div className="flex-shrink-0 mt-1">
@@ -457,17 +454,17 @@ const Navbar = () => {
                                         }}
                                       />
                                     ) : (
-                                      <FaUserCircle className="text-deep-cosmos-light-grey text-2xl" />
+                                      <FaUserCircle className="text-secondary text-2xl" />
                                     )}
                                   </div>
                                   <div className="ml-3 flex-1 overflow-hidden">
                                     <div className="flex justify-between">
-                                      <p className="text-sm font-medium text-deep-cosmos-white truncate">{otherParticipant?.fullName || "Unknown User"}</p>
-                                      <p className="text-xs text-deep-cosmos-light-grey">{chat.lastMessage?.createdAt && dayjs(chat.lastMessage.createdAt).fromNow()}</p>
+                                      < p className="text-sm font-medium text-primary truncate">{otherParticipant?.fullName || "Unknown User"}</p>
+                                      <p className="text-xs text-secondary">{chat.lastMessage?.createdAt && dayjs(chat.lastMessage.createdAt).fromNow()}</p>
                                     </div>
-                                    <p className="text-sm text-deep-cosmos-light-grey truncate">{lastMessagePreview}</p>
+                                    <p className="text-sm text-secondary truncate">{lastMessagePreview}</p>
                                   </div>
-                                  {(unreadFromChat > 0 || hasUnread) && <div className="ml-2 w-2 h-2 bg-deep-cosmos-teal rounded-full flex-shrink-0"></div>}
+                                  {(unreadFromChat > 0 || hasUnread) && <div className="ml-2 w-2 h-2 bg-accent rounded-full flex-shrink-0"></div>}
                                 </Link>
                               );
                             })
@@ -479,7 +476,7 @@ const Navbar = () => {
                   <li>
                     <Link
                       to="/all-users"
-                      className={`flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/all-users' ? 'active' : ''}`}
+                      className={`flex items-center text-primary hover:text-accent px-3 py-2 rounded-md text-sm font-medium navbar-link ${location.pathname === '/all-users' ? 'active' : ''}`}
                     >
                       <FaUserFriends className="mr-2" /> Users
                     </Link>
@@ -490,7 +487,7 @@ const Navbar = () => {
             <div className="md:hidden">
               <button
                 onClick={toggleMobileDrawer}
-                className="p-2 rounded-md text-deep-cosmos-white hover:text-deep-cosmos-teal"
+                className="p-2 rounded-md text-primary hover:text-accent"
                 aria-label="Toggle mobile menu"
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -506,14 +503,13 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Mobile Drawer */}
       <div className={`drawer-overlay ${isMobileDrawerOpen ? 'open' : ''}`} onClick={toggleMobileDrawer}></div>
       <div className={`drawer ${isMobileDrawerOpen ? 'open' : ''}`}>
-        <div className="flex justify-between items-center p-4 bg-deep-cosmos-primary border-b border-deep-cosmos-grey">
-          <span className="text-xl font-bold text-deep-cosmos-white">Menu</span>
+        <div className="flex justify-between items-center p-4 bg-primary border-b border-grey">
+          <span className="text-xl font-semibold text-primary">Menu</span>
           <button
             onClick={toggleMobileDrawer}
-            className="p-2 text-deep-cosmos-white hover:text-deep-cosmos-teal"
+            className="p-2 text-primary hover:text-accent"
             aria-label="Close drawer"
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -525,7 +521,7 @@ const Navbar = () => {
           <li>
             <Link
               to="/"
-              className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+              className="flex items-center text-primary hover:text-accent px-4 py-2 text-base font-medium"
               onClick={() => { scrollToTop(); setIsMobileDrawerOpen(false); }}
             >
               <FaHome className="mr-2" /> Home
@@ -534,7 +530,7 @@ const Navbar = () => {
           <li>
             <Link
               to="/projects"
-              className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+              className="flex items-center text-primary hover:text-accent px-4 py-2 text-base font-medium"
               onClick={() => setIsMobileDrawerOpen(false)}
             >
               <FaCode className="mr-2" /> Projects
@@ -543,7 +539,7 @@ const Navbar = () => {
           <li>
             <Link
               to="/jobs"
-              className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+              className="flex items-center text-primary hover:text-accent px-4 py-2 text-base font-medium"
               onClick={() => setIsMobileDrawerOpen(false)}
             >
               <FaBriefcase className="mr-2" /> Jobs
@@ -552,16 +548,16 @@ const Navbar = () => {
           <li className="relative">
             <button
               onClick={toggleDropdown}
-              className="flex items-center justify-between w-full text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+              className="flex items-center justify-between w-full text-primary hover:text-accent px-4 py-2 text-base font-medium"
             >
               <span><FaSearch className="inline mr-2" /> Developers</span>
               {isDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
             </button>
             {isDropdownOpen && (
-              <div className="ml-4 bg-deep-cosmos-primary rounded-md py-2">
+              <div className="ml-4 bg-primary rounded-md py-2">
                 <Link
                   to="/all-developers"
-                  className="block px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal"
+                  className="block px-4 py-2 text-secondary hover:text-accent"
                   onClick={() => { setIsDropdownOpen(false); setIsMobileDrawerOpen(false); }}
                 >
                   All Developers
@@ -570,7 +566,7 @@ const Navbar = () => {
                   <Link
                     key={category.id}
                     to={category.link}
-                    className="block px-4 py-2 text-deep-cosmos-light-grey hover:text-deep-cosmos-teal"
+                    className="block px-4 py-2 text-secondary hover:text-accent"
                     onClick={() => { setIsDropdownOpen(false); setIsMobileDrawerOpen(false); }}
                   >
                     {category.name}
@@ -584,7 +580,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/login"
-                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+                  className="flex items-center text-primary hover:text-accent px-4 py-2 text-base font-medium"
                   onClick={() => setIsMobileDrawerOpen(false)}
                 >
                   <FaUser className="mr-2" /> Login
@@ -593,7 +589,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/register"
-                  className="flex items-center bg-deep-cosmos-teal text-deep-cosmos-primary px-4 py-2 rounded-md hover:bg-deep-cosmos-gold transition-all text-base font-medium"
+                  className="flex items-center bg-accent text-white px-4 py-2 rounded-md hover:bg-accent-hover transition-all text-base font-medium"
                   onClick={() => setIsMobileDrawerOpen(false)}
                 >
                   <FaUserPlus className="mr-2" /> Register
@@ -606,7 +602,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/feed"
-                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+                  className="flex items-center text-primary hover:text-accent px-4 py-2 text-base font-medium"
                   onClick={() => setIsMobileDrawerOpen(false)}
                 >
                   <FaRss className="mr-2" /> Feed
@@ -615,7 +611,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/create-post"
-                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+                  className="flex items-center text-primary hover:text-accent px-4 py-2 text-base font-medium"
                   onClick={() => setIsMobileDrawerOpen(false)}
                 >
                   <FaRegCommentDots className="mr-2" /> Create Post
@@ -624,7 +620,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/notifications"
-                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium relative"
+                  className="flex items-center text-primary hover:text-accent px-4 py-2 text-base font-medium relative"
                   onClick={() => setIsMobileDrawerOpen(false)}
                 >
                   <IoMdNotificationsOutline className="mr-2" />
@@ -639,7 +635,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/chat"
-                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium relative"
+                  className="flex items-center text-primary hover:text-accent px-4 py-2 text-base font-medium relative"
                   onClick={() => setIsMobileDrawerOpen(false)}
                 >
                   <BsFillChatDotsFill className="mr-2" />
@@ -654,7 +650,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/all-users"
-                  className="flex items-center text-deep-cosmos-white hover:text-deep-cosmos-teal px-4 py-2 text-base font-medium"
+                  className="flex items-center text-primary hover:text-accent px-4 py-2 text-base font-medium"
                   onClick={() => setIsMobileDrawerOpen(false)}
                 >
                   <FaUserFriends className="mr-2" /> Users

@@ -1,4 +1,4 @@
-
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -75,56 +75,55 @@ const Notifications = () => {
 
   if (authLoading || isLoadingLocal) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <FaSpinner className="w-16 h-16 text-cyan-400 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <FaSpinner className="w-16 h-16 text-blue-600 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pt-20 pb-12 px-4 sm:px-6 lg:px-8 font-inter">
+    <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-3xl mx-auto">
-        <div className="relative overflow-hidden mb-8 rounded-xl shadow-lg">
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 backdrop-blur-3xl"></div>
+        <div className="relative overflow-hidden mb-8 rounded-xl shadow-md">
           <div className="relative text-center py-6">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-semibold text-slate-800">
               Your Notifications
             </h1>
-            <p className="text-slate-300 mt-2">
+            <p className="text-slate-600 mt-2">
               Stay informed about what's happening
             </p>
           </div>
         </div>
 
         {error && (
-          <div className="bg-red-500/20 text-red-400 p-4 rounded-xl text-sm border border-red-500/30 mb-6">
+          <div className="bg-red-100 text-red-600 p-4 rounded-md text-sm border border-red-200 mb-6">
             {error}
           </div>
         )}
 
-        {notifications.length > 0 && notifications.some(notif => !notif.isRead) && (
+        {notifications.length > 0 && notifications.some(notif => !notif.isComplete) && (
           <div className="flex justify-end mb-6">
             <button
               onClick={handleMarkAllAsRead}
-              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all duration-300 font-medium shadow-md shadow-blue-500/25"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-100 transition-colors duration-200 hover:bg-blue-700 transition-all duration-300 font-medium shadow-md"
               disabled={isLoadingLocal}
             >
-              <FaCheckCircle className="mr-2" /> {isLoadingLocal ? "Marking..." : "Mark all as Read"}
+              <FaCheckCircle className="mr-2" /> {isLoadingLocal ? "Marking..." : "Mark all as read"}
             </button>
           </div>
         )}
 
         {notifications.length === 0 ? (
-          <div className="bg-slate-800/50 backdrop-blur-lg rounded-2xl p-8 text-center border border-slate-700/50 shadow-xl">
-            <div className="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FaBell className="text-slate-400 text-2xl" />
+          <div className="bg-white text-center space-y-4 rounded-xl py-8 border border-gray-200 shadow-md">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FaBell className="text-blue-600 text-2xl" />
             </div>
-            <p className="text-slate-300 mb-4 text-lg">
+            <p className="text-center text-slate-600 mb-4 text-lg">
               You don't have any notifications yet.
             </p>
             <Link
-              to="/feed"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium shadow-lg shadow-cyan-500/25"
+              to="/"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-300 font-medium shadow-md"
             >
               Explore Feed
             </Link>
@@ -135,31 +134,31 @@ const Notifications = () => {
               <div
                 key={notif._id}
                 onClick={() => !notif.isRead && handleMarkAsRead(notif._id)}
-                className={`flex items-start p-4 rounded-xl border transition-all duration-300 cursor-pointer ${
+                className={`flex items-start p-4 rounded-md border transition-all duration-300 cursor-pointer ${
                   notif.isRead
-                    ? "bg-slate-700/20 border-slate-600/30 text-slate-400 hover:bg-slate-700/30"
-                    : "bg-purple-700/20 border-purple-600/50 text-white hover:bg-purple-700/30 shadow-md shadow-purple-500/10"
+                    ? "bg-gray-50 border-gray-200 text-slate-600 hover:bg-gray-100"
+                    : "bg-blue-50 border-blue-200 text-slate-800 hover:bg-blue-100 shadow-md"
                 }`}
               >
                 <div className="flex-shrink-0 mr-4 mt-1">
                   {notif.isRead ? (
-                    <FaCheckCircle className="text-green-400 text-xl" />
+                    <FaCheckCircle className="text-green-600 text-xl" />
                   ) : (
-                    <FaCircle className="text-blue-400 text-xl" />
+                    <FaCircle className="text-blue-600 text-xl" />
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className={`leading-relaxed ${notif.isRead ? "font-normal" : "font-semibold text-white"}`}>
+                  <p className={`leading-relaxed ${notif.isRead ? "font-normal" : "font-semibold text-slate-800"}`}>
                     <Link
                       to={`/my-profile/${notif.senderId?._id}`}
-                      className="text-cyan-300 hover:text-cyan-200 font-semibold"
+                      className="text-blue-600 hover:text-blue-700 font-semibold"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {notif.senderId?.fullName || "A user"}
                     </Link>{" "}
                     {notif.message}
                   </p>
-                  <span className="text-sm text-slate-400 mt-1 flex items-center">
+                  <span className="text-sm text-slate-600 mt-1 flex items-center">
                     <FaCalendarAlt className="mr-1" />
                     {dayjs(notif.createdAt).fromNow()}
                   </span>

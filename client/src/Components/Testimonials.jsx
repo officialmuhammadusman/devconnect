@@ -24,34 +24,34 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section id="trusted" className="relative bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
-      {/* Glassmorphic Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/5 backdrop-blur-sm"></div>
-
+    <section
+      id="trusted"
+      className="relative bg-gray-50 py-12 sm:py-16 px-4 sm:px-6 lg:px-8"
+    >
       <div className="max-w-7xl mx-auto text-center relative z-10">
-        <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold mb-6 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+        <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold mb-6 text-slate-800">
           Trusted by Developers Worldwide
         </h2>
-        <p className="text-slate-300 text-lg md:text-xl mb-12 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-gray-600 text-lg md:text-xl mb-12 max-w-3xl mx-auto leading-relaxed">
           Real stories from the DevConnect community.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {testimonials.map((t, idx) => (
             <div
               key={idx}
-              className="group bg-slate-700/30 backdrop-blur-lg rounded-2xl p-6 border border-slate-600/30 hover:border-cyan-400/50 transition-all duration-300 hover:scale-105 shadow-lg"
+              className="group bg-white rounded-xl p-6 border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 hover:border-blue-600/50 hover:scale-105"
             >
               <img
                 src={t.image}
                 alt={t.name}
-                className="w-16 h-16 rounded-full mb-4 border-2 border-cyan-400 shadow-md mx-auto"
+                className="w-16 h-16 rounded-full mb-4 border-2 border-blue-600 shadow-md mx-auto"
               />
-              <h3 className="text-white font-semibold text-lg mb-2 group-hover:text-cyan-400 transition-colors duration-300">
+              <h3 className="text-slate-800 font-semibold text-lg mb-1 group-hover:text-blue-600">
                 {t.name}
               </h3>
-              <p className="text-sm text-slate-300 mb-4">{t.role}</p>
-              <p className="text-slate-300 text-sm italic leading-relaxed mb-4">
+              <p className="text-sm text-gray-500 mb-3">{t.role}</p>
+              <p className="text-gray-700 text-sm italic leading-relaxed mb-4">
                 “{t.quote}”
               </p>
               <div className="flex justify-center space-x-1 text-yellow-400">

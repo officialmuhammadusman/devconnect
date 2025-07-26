@@ -125,7 +125,7 @@ const Register = () => {
                 }
               }}
             >
-              {({ values, setFieldValue, isSubmitting, handleSubmit }) => (
+              {({ values, isSubmitting, handleSubmit }) => (
                 <div className="space-y-6" onSubmit={handleSubmit}>
                   {/* Personal Information Section */}
                   <div>

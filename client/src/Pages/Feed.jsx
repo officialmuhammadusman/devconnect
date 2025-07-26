@@ -1,5 +1,7 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate, Link, useLocation } from "react-router-dom"; // Added useLocation for context
+// eslint-disable-next-line no-unused-vars
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   FaUserCircle,
@@ -33,6 +35,7 @@ const Feed = () => {
     editPost,
     deletePost,
     commentOnPost,
+    // eslint-disable-next-line no-unused-vars
     initiateChat,
   } = useAuth();
 
@@ -136,6 +139,7 @@ const Feed = () => {
       } else {
         toast.error(result.message || "Failed to share post.");
       }
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast.error("An error occurred while sharing the post.");
     } finally {
@@ -248,12 +252,12 @@ const Feed = () => {
   const renderSharedPostHeader = (post) => {
     if (post.isShared && post.originalPost) {
       return (
-        <div className="flex items-center mb-3 text-slate-400 text-sm border-b border-slate-600/30 pb-3">
-          <FaRetweet className="mr-2 text-cyan-400" />
+        <div className="flex items-center mb-3 text-slate-600 text-sm border-b border-gray-200 pb-3">
+          <FaRetweet className="mr-2 text-blue-600" />
           <span>
             <Link
               to={`/my-profile/${post.user._id}`}
-              className="text-cyan-400 hover:text-cyan-300 font-medium"
+              className="text-blue-600 hover:text-blue-700 font-medium"
             >
               {post.user.fullName || "Anonymous"}
             </Link>
@@ -272,48 +276,47 @@ const Feed = () => {
 
   if (authLoading && !token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <FaSpinner className="w-16 h-16 text-cyan-400 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <FaSpinner className="w-16 h-16 text-blue-600 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pt-20 pb-12 px-4 sm:px-6 lg:px-8 font-inter">
+    <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-4 sm:px-6 lg:px-8 font-inter">
       <div className="max-w-3xl mx-auto">
-        <div className="relative overflow-hidden mb-8 rounded-xl shadow-lg">
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 backdrop-blur-3xl"></div>
+        <div className="relative overflow-hidden mb-8 rounded-xl shadow-md">
           <div className="relative text-center py-6">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold text-slate-800">
               Your Feed
             </h1>
-            <p className="text-slate-300 mt-2">
+            <p className="text-slate-600 mt-2">
               Stay updated with posts from developers you follow
             </p>
           </div>
         </div>
 
         {error && (
-          <div className="bg-red-500/20 text-red-400 p-4 rounded-xl text-sm border border-red-500/30 mb-6">
+          <div className="bg-red-100 text-red-800 p-4 rounded-xl text-sm border border-red-200 mb-6">
             {error}
           </div>
         )}
 
         {isLoading ? (
           <div className="flex justify-center py-10">
-            <FaSpinner className="w-12 h-12 text-cyan-400 animate-spin" />
+            <FaSpinner className="w-12 h-12 text-blue-600 animate-spin" />
           </div>
         ) : posts.length === 0 ? (
-          <div className="bg-slate-800/50 backdrop-blur-lg rounded-2xl p-8 text-center border border-slate-700/50 shadow-xl">
-            <div className="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FaRegCommentDots className="text-slate-400 text-2xl" />
+          <div className="bg-white rounded-xl p-8 text-center border border-gray-200 shadow-md">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FaRegCommentDots className="text-slate-600 text-2xl" />
             </div>
-            <p className="text-slate-300 mb-4 text-lg">
+            <p className="text-slate-600 mb-4 text-lg">
               No posts to show. Follow some developers or create a post!
             </p>
             <Link
               to="/create-post"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 font-medium shadow-lg shadow-cyan-500/25"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 font-medium shadow-md"
             >
               Create a Post
             </Link>
@@ -328,7 +331,7 @@ const Feed = () => {
               return (
                 <article
                   key={post._id}
-                  className="bg-slate-700/30 backdrop-blur-lg rounded-xl p-6 border border-slate-600/30 hover:bg-slate-700/50 transition-all duration-300 shadow-lg"
+                  className="bg-white rounded-xl p-6 border border-gray-200 hover:bg-gray-50 transition-all duration-300 shadow-md"
                 >
                   {renderSharedPostHeader(post)}
                   
@@ -337,31 +340,31 @@ const Feed = () => {
                       <img
                         src={displayPost.user.profileImage}
                         alt={displayPost.user.fullName}
-                        className="w-12 h-12 rounded-full object-cover border-2 border-slate-600"
+                        className="w-12 h-12 rounded-full object-cover border-2 border-gray-300"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = `https://placehold.co/48x48/64748b/ffffff?text=${displayPost.user.fullName?.[0] || '?'}`;
                         }}
                       />
                     ) : (
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
                         <FaUserCircle className="text-white text-lg" />
                       </div>
                     )}
                     <div className="ml-4 flex-1">
                       <Link
                         to={`/my-profile/${displayPost.user._id}`}
-                        className="text-white font-semibold hover:text-cyan-400 transition-colors duration-200"
+                        className="text-slate-800 font-semibold hover:text-blue-600 transition-colors duration-200"
                       >
                         {displayPost.user.fullName || "Anonymous"}
                       </Link>
-                      <div className="flex items-center text-slate-400 text-sm mt-1">
+                      <div className="flex items-center text-slate-600 text-sm mt-1">
                         <FaCalendarAlt className="mr-1" />
                         <span>{dayjs(displayPost.createdAt).fromNow()}</span>
                         {isSharedPost && (
                           <>
                             <span className="mx-2">•</span>
-                            <span className="text-cyan-400">Shared {dayjs(post.createdAt).fromNow()}</span>
+                            <span className="text-blue-600">Shared {dayjs(post.createdAt).fromNow()}</span>
                           </>
                         )}
                       </div>
@@ -370,14 +373,14 @@ const Feed = () => {
                       <div className="flex space-x-2">
                         <button
                           onClick={() => openEditModal(post)}
-                          className="p-2 rounded-full text-slate-400 hover:text-blue-400 hover:bg-slate-600/50 transition-colors duration-200"
+                          className="p-2 rounded-full text-slate-600 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
                           title="Edit Post"
                         >
                           <FaEdit />
                         </button>
                         <button
                           onClick={() => openDeleteConfirmModal(post._id)}
-                          className="p-2 rounded-full text-slate-400 hover:text-red-400 hover:bg-slate-600/50 transition-colors duration-200"
+                          className="p-2 rounded-full text-slate-600 hover:text-red-600 hover:bg-gray-100 transition-colors duration-200"
                           title="Delete Post"
                         >
                           <FaTrashAlt />
@@ -386,12 +389,12 @@ const Feed = () => {
                     )}
                   </div>
                   
-                  <p className="text-slate-200 leading-relaxed mb-4">
+                  <p className="text-slate-800 leading-relaxed mb-4">
                     {displayPost.text}
                   </p>
                   
                   {displayPost.image && (
-                    <div className="rounded-lg overflow-hidden border border-slate-600 mb-4">
+                    <div className="rounded-lg overflow-hidden border border-gray-300 mb-4">
                       <img
                         src={displayPost.image}
                         alt="Post content"
@@ -404,13 +407,13 @@ const Feed = () => {
                     </div>
                   )}
                   
-                  <div className="flex items-center space-x-6 text-slate-400 text-sm border-t border-slate-600/50 pt-4">
+                  <div className="flex items-center space-x-6 text-slate-600 text-sm border-t border-gray-200 pt-4">
                     <button
                       onClick={() => handleLikePost(isSharedPost ? post.originalPost._id : post._id)}
                       className={`flex items-center transition-colors duration-200 ${
                         user && displayPost.likes.includes(user._id)
-                          ? "text-red-500 hover:text-red-600"
-                          : "hover:text-red-400"
+                          ? "text-red-600 hover:text-red-700"
+                          : "hover:text-red-600"
                       }`}
                     >
                       {user && displayPost.likes.includes(user._id) ? (
@@ -421,7 +424,7 @@ const Feed = () => {
                       {displayPost.likes.length} Like{displayPost.likes.length !== 1 ? 's' : ''}
                     </button>
                     
-                    <button className="flex items-center hover:text-blue-400 transition-colors duration-200">
+                    <button className="flex items-center hover:text-blue-600 transition-colors duration-200">
                       <FaComment className="mr-2" /> 
                       {displayPost.comments?.length || 0} Comment{(displayPost.comments?.length || 0) !== 1 ? 's' : ''}
                     </button>
@@ -430,7 +433,7 @@ const Feed = () => {
                       <button
                         onClick={() => handleSharePost(isSharedPost ? post.originalPost._id : post._id)}
                         disabled={sharingPostId === (isSharedPost ? post.originalPost._id : post._id)}
-                        className="flex items-center hover:text-green-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center hover:text-green-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {sharingPostId === (isSharedPost ? post.originalPost._id : post._id) ? (
                           <FaSpinner className="mr-2 animate-spin" />
@@ -442,8 +445,8 @@ const Feed = () => {
                     )}
                   </div>
 
-                  <div className="mt-6 border-t border-slate-600/50 pt-4">
-                    <h3 className="text-lg font-semibold text-white mb-3">Comments</h3>
+                  <div className="mt-6 border-t border-gray-200 pt-4">
+                    <h3 className="text-lg font-semibold text-slate-800 mb-3">Comments</h3>
                     {displayPost.comments && displayPost.comments.length > 0 ? (
                       <div className="space-y-3">
                         {displayPost.comments.map((comment) => (
@@ -452,30 +455,30 @@ const Feed = () => {
                               <img
                                 src={comment.user.profileImage}
                                 alt={comment.user.fullName}
-                                className="w-8 h-8 rounded-full object-cover border border-slate-600 flex-shrink-0"
+                                className="w-8 h-8 rounded-full object-cover border border-gray-300 flex-shrink-0"
                                 onError={(e) => {
                                   e.target.onerror = null;
                                   e.target.src = `https://placehold.co/32x32/64748b/ffffff?text=${comment.user.fullName?.[0] || '?'}`;
                                 }}
                               />
                             ) : (
-                              <div className="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center flex-shrink-0">
-                                <FaUserCircle className="text-slate-300 text-sm" />
+                              <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+                                <FaUserCircle className="text-slate-600 text-sm" />
                               </div>
                             )}
-                            <div className="ml-3 bg-slate-700/50 p-3 rounded-lg flex-1">
+                            <div className="ml-3 bg-gray-100 p-3 rounded-lg flex-1">
                               <div className="flex items-center justify-between">
                                 <Link
                                   to={`/my-profile/${comment.user?._id}`}
-                                  className="text-white font-semibold text-sm hover:text-cyan-400"
+                                  className="text-slate-800 font-semibold text-sm hover:text-blue-600"
                                 >
                                   {comment.user?.fullName || "Anonymous"}
                                 </Link>
-                                <span className="text-slate-400 text-xs">
+                                <span className="text-slate-600 text-xs">
                                   {dayjs(comment.createdAt).fromNow()}
                                 </span>
                               </div>
-                              <p className="text-slate-200 text-sm mt-1">
+                              <p className="text-slate-800 text-sm mt-1">
                                 {comment.text}
                               </p>
                             </div>
@@ -483,7 +486,7 @@ const Feed = () => {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-slate-400 text-sm">No comments yet. Be the first to comment!</p>
+                      <p className="text-slate-600 text-sm">No comments yet. Be the first to comment!</p>
                     )}
 
                     <div className="mt-4 flex items-center space-x-3">
@@ -496,13 +499,13 @@ const Feed = () => {
                             handleAddComment(isSharedPost ? post.originalPost._id : post._id);
                           }
                         }}
-                        className="flex-1 p-3 rounded-lg bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none h-auto overflow-hidden"
+                        className="flex-1 p-3 rounded-lg bg-white text-slate-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none h-auto overflow-hidden"
                         placeholder="Add a comment..."
                         rows="1"
                       ></textarea>
                       <button
                         onClick={() => handleAddComment(isSharedPost ? post.originalPost._id : post._id)}
-                        className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full hover:from-blue-600 hover:to-purple-600 transition-all duration-300 shadow-md"
+                        className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all duration-300 shadow-md"
                         title="Add Comment"
                       >
                         <FaPaperPlane />
@@ -518,21 +521,21 @@ const Feed = () => {
 
       {showEditModal && editingPost && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-md p-6 border border-slate-700 relative">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 border border-gray-200 relative">
             <button
               onClick={() => setShowEditModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-slate-600 hover:text-slate-800 transition-colors"
             >
               <FaTimes size={20} />
             </button>
-            <h2 className="text-2xl font-bold text-white mb-6 text-center">
+            <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">
               Edit Your Post
             </h2>
             <form onSubmit={handleSaveEdit} className="space-y-4">
               <div>
                 <label
                   htmlFor="editText"
-                  className="block text-slate-300 text-sm font-medium mb-2"
+                  className="block text-slate-600 text-sm font-medium mb-2"
                 >
                   Post Text:
                 </label>
@@ -540,7 +543,7 @@ const Feed = () => {
                   id="editText"
                   value={editText}
                   onChange={(e) => setEditText(e.target.value)}
-                  className="w-full p-3 rounded-lg bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-y"
+                  className="w-full p-3 rounded-lg bg-gray-50 text-slate-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-y"
                   rows="4"
                   placeholder="What's on your mind?"
                   required
@@ -549,7 +552,7 @@ const Feed = () => {
               <div>
                 <label
                   htmlFor="editImage"
-                  className="block text-slate-300 text-sm font-medium mb-2"
+                  className="block text-slate-600 text-sm font-medium mb-2"
                 >
                   Change Image:
                 </label>
@@ -558,19 +561,19 @@ const Feed = () => {
                   id="editImage"
                   accept="image/*"
                   onChange={handleEditImageChange}
-                  className="w-full text-slate-300 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-cyan-500 file:to-blue-500 file:text-white hover:file:from-cyan-600 hover:file:to-blue-600 cursor-pointer"
+                  className="w-full text-slate-600 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer"
                 />
                 {previewEditImage && (
                   <div className="mt-4 relative">
                     <img
                       src={previewEditImage}
                       alt="Image Preview"
-                      className="w-full h-48 object-cover rounded-lg border border-slate-600"
+                      className="w-full h-48 object-cover rounded-lg border border-gray-300"
                     />
                     <button
                       type="button"
                       onClick={() => setPreviewEditImage("")}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors"
+                      className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1.5 hover:bg-red-700 transition-colors"
                       title="Remove Image"
                     >
                       <FaTimes size={14} />
@@ -580,7 +583,7 @@ const Feed = () => {
               </div>
               <button
                 type="submit"
-                className="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg hover:from-green-600 hover:to-teal-600 transition-all duration-300 font-medium shadow-lg shadow-green-500/25"
+                className="w-full flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 font-medium shadow-md"
               >
                 <FaPaperPlane className="mr-2" /> Save Changes
               </button>
@@ -591,21 +594,21 @@ const Feed = () => {
 
       {showDeleteConfirmModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-sm p-6 border border-slate-700 relative text-center">
-            <h2 className="text-2xl font-bold text-white mb-4">Confirm Deletion</h2>
-            <p className="text-slate-300 mb-6">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 border border-gray-200 relative text-center">
+            <h2 className="text-2xl font-bold text-slate-800 mb-4">Confirm Deletion</h2>
+            <p className="text-slate-600 mb-6">
               Are you sure you want to delete this post? This action cannot be undone.
             </p>
             <div className="flex justify-center space-x-4">
               <button
                 onClick={() => setShowDeleteConfirmModal(false)}
-                className="px-6 py-3 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors duration-200 font-medium"
+                className="px-6 py-3 bg-gray-300 text-slate-800 rounded-lg hover:bg-gray-400 transition-colors duration-200 font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmDelete}
-                className="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-lg hover:from-red-700 hover:to-rose-700 transition-all duration-300 font-medium shadow-lg shadow-red-600/25"
+                className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-300 font-medium shadow-md"
               >
                 Delete
               </button>
